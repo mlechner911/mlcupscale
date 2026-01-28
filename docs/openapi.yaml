@@ -1,0 +1,241 @@
+openapi: 3.0.3
+info:
+  title: Image Upscale Service
+  description: |
+    A REST API for AI-based image upscaling using Real-ESRGAN.
+    
+    This service allows you to upload images and upscale them by 2x, 3x, or 4x using various optimized models.
+  version: 1.0.0
+  contact:
+    name: Michael Lechner
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8089/api/v1
+    description: Local Docker development server
+
+paths:
+  /upscale:
+    post:
+      summary: Upscale an image
+      description: Upload an image file to be upscaled by the specified factor and model.
+      operationId: upscaleImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image file to upscale (PNG, JPG, WEBP).
+                scale:
+                  type: integer
+                  enum: [2, 3, 4]
+                  default: 4
+                  description: The upscaling factor.
+                model_name:
+                  type: string
+                  default: realesrgan-x4plus
+                  description: The name of the model to use. See /models for available options.
+                tile_size:
+                  type: integer
+                  default: 0
+                  description: Tile size for processing large images (0 = auto). Use smaller values (e.g., 400) to reduce VRAM usage.
+                format:
+                  type: string
+                  enum: [png, jpg, webp]
+                  description: Output format (optional, defaults to input format or png).
+              required:
+                - image
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpscaleResponse'
+        '400':
+          description: Invalid input (e.g., unsupported scale or missing image)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /download/{job_id}:
+    get:
+      summary: Download upscaled image
+      description: Retrieve the result of a completed upscaling job.
+      operationId: downloadImage
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the job returned by the /upscale endpoint.
+      responses:
+        '200':
+          description: The upscaled image file.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Job or file not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /status/{job_id}:
+    get:
+      summary: Get job status
+      description: Check the progress or status of a specific job.
+      operationId: getJobStatus
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Current job status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [queued, processing, completed, failed]
+                  progress:
+                    type: integer
+                    description: Estimated progress (0-100)
+        '404':
+          description: Job not found
+
+  /models:
+    get:
+      summary: List available models
+      description: Get a list of installed AI models and the service version.
+      operationId: listModels
+      parameters:
+        - name: scale
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filter models that support this specific scaling factor.
+      responses:
+        '200':
+          description: List of models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ModelInfo'
+
+  /health:
+    get:
+      summary: Health check
+      description: Returns the health status and version of the service.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 1.0.0
+                  time:
+                    type: integer
+                    format: int64
+
+components:
+  schemas:
+    UpscaleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        job_id:
+          type: string
+        download_url:
+          type: string
+          description: Relative URL to download the result.
+        duration_seconds:
+          type: number
+          format: double
+        input_size:
+          $ref: '#/components/schemas/ImageSize'
+        output_size:
+          $ref: '#/components/schemas/ImageSize'
+        file_size_bytes:
+          type: integer
+          format: int64
+    
+    ImageSize:
+      type: object
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+
+    ModelInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        supported_scales:
+          type: array
+          items:
+            type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        success:
+          type: boolean
+          example: false
