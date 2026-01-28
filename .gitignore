@@ -1,0 +1,38 @@
+# Binaries
+/build/
+/bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Models (downloaded via script)
+/models/*
+!/models/.keep
+
+# Data (except keepfiles if any, but usually we ignore contents)
+/data/uploads/*
+!/data/uploads/.keep
+/data/outputs/*
+!/data/outputs/.keep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+/logs/
+*.log
+
+# Temp
+/tmp/
+test_upscaled.png
+test_output.png
+test/testdata/sample_images/*
+!test/testdata/sample_images/.keep
