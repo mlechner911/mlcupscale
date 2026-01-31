@@ -6,6 +6,17 @@ A high-performance, containerized REST API for AI-based image upscaling using Re
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Beta-orange)
 
+## Why?
+
+I wrote this "upscale service" to handle **huge images** (e.g., 10,000x10,000 pixels) that require significant compute power to upscale even further.
+
+This server is **not** primarily meant for small images; there are plenty of existing tools for that. The goal is to utilize a high-powered server (GPU) to process massive files asynchronously without blocking the client.
+
+**The Workflow:**
+1.  **Upload** a massive file to the server.
+2.  **Poll** the status endpoint while the server processes the job.
+3.  **Retrieve** the final image once processing is complete.
+
 ## Features
 
 *   **AI Upscaling**: High-quality 2x, 3x, and 4x image upscaling.
@@ -156,7 +167,10 @@ make build-client
 
 Configuration is managed via `config/config.yaml`. Key settings include:
 
-*   **Server**: Port, timeouts, auth token.
+*   **Server**: Port, timeouts.
+*   **Security (Production)**:
+    *   `auth_token`: Set a strong string here to enable Bearer Token authentication.
+    *   `api_prefix`: Adjust the global API prefix (default: `/api/v1`). Useful when running behind reverse proxies like Traefik (e.g., set to `/upscaler/v1`).
 *   **Upscaler**: GPU enable/disable, thread count, model path.
 *   **Storage**: Upload/output directories, cleanup policies.
 *   **Limits**: Concurrency, queue size.
