@@ -72,6 +72,7 @@ COPY --from=go-builder /app/upscale-server ./
 # The plan says "COPY models ./models/" implying they are local.
 COPY models ./models/
 COPY config ./config/
+COPY docs ./docs/
 
 # Create data directories
 RUN mkdir -p data/uploads data/outputs && \

@@ -1,42 +1,46 @@
 server:
   host: "0.0.0.0"
   port: 8089
+  api_prefix: "/api/v1"
+  auth_token: ""  # Leave empty to disable authentication
   read_timeout_seconds: 300
   write_timeout_seconds: 300
   max_request_size_mb: 100
-  
+
 upscaler:
   binary_path: "./bin/realesrgan-ncnn-vulkan"
   models_path: "./models"
   default_model: "realesrgan-x4plus"
   default_scale: 4
-  threads: "12:12:12"
+  threads: "2:2:2"
   enable_gpu: true
   gpu_id: -1  # -1 = auto-detect
-  
+
 storage:
   upload_dir: "./data/uploads"
   output_dir: "./data/outputs"
   max_file_size_mb: 100
   cleanup_after_hours: 24
   retention_policy: "delete_after_download"  # or "keep"
-  
+
 limits:
-  max_concurrent_jobs: 4
+  max_concurrent_jobs: 1
   max_queue_size: 20
   rate_limit_per_minute: 10
-  
+
 logging:
   level: "info"  # debug, info, warn, error
   format: "json"  # json or text
   output: "stdout"  # stdout, file, or both
   file_path: "./logs/upscale-service.log"
-  
+
 features:
   async_processing: true
   job_queue: true
   metrics: true
   cors_enabled: true
+  enable_swagger: true
+  enable_web_ui: true
   allowed_origins:
     - "http://localhost:3000"
-    - "http://macstudio.local"
+    - "*"

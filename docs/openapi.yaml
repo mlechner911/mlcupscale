@@ -13,14 +13,18 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:8089/api/v1
-    description: Local Docker development server
+  - url: .
+    description: Current Server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
 
 paths:
   /upscale:
     post:
       summary: Upscale an image
-      description: Upload an image file to be upscaled by the specified factor and model.
+      description: Upload an image file to be upscaled. This is an asynchronous operation.
       operationId: upscaleImage
       requestBody:
         required: true
@@ -53,8 +57,8 @@ paths:
               required:
                 - image
       responses:
-        '200':
-          description: Successful operation
+        '202':
+          description: Job accepted
           content:
             application/json:
               schema:
@@ -110,7 +114,7 @@ paths:
   /status/{job_id}:
     get:
       summary: Get job status
-      description: Check the progress or status of a specific job.
+      description: Check the progress or status of a specific job. If completed, returns result details.
       operationId: getJobStatus
       parameters:
         - name: job_id
@@ -130,12 +134,63 @@ paths:
                     type: string
                   status:
                     type: string
-                    enum: [queued, processing, completed, failed]
+                    enum: [queued, processing, completed, failed, cancelled]
                   progress:
                     type: integer
                     description: Estimated progress (0-100)
+                  download_url:
+                    type: string
+                    description: Relative URL to download the result (only if completed).
+                  duration_seconds:
+                    type: number
+                    format: double
+                  input_size:
+                    $ref: '#/components/schemas/ImageSize'
+                  output_size:
+                    $ref: '#/components/schemas/ImageSize'
+                  file_size_bytes:
+                    type: integer
+                    format: int64
+                  error:
+                    type: string
         '404':
           description: Job not found
+
+  /cancel/{job_id}:
+    post:
+      summary: Cancel job
+      description: Cancel a running or queued job.
+      operationId: cancelJob
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job cancelled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Bad request (e.g. job already completed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /models:
     get:
@@ -189,6 +244,15 @@ paths:
                     format: int64
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Auth-Token
+
   schemas:
     UpscaleResponse:
       type: object
@@ -197,19 +261,9 @@ components:
           type: boolean
         job_id:
           type: string
-        download_url:
+        status_url:
           type: string
-          description: Relative URL to download the result.
-        duration_seconds:
-          type: number
-          format: double
-        input_size:
-          $ref: '#/components/schemas/ImageSize'
-        output_size:
-          $ref: '#/components/schemas/ImageSize'
-        file_size_bytes:
-          type: integer
-          format: int64
+          description: Relative URL to check job status.
     
     ImageSize:
       type: object

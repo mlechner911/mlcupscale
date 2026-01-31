@@ -28,6 +28,12 @@ echo "Copying models to $ABS_MODELS_DIR..."
 # The zip structure has a 'models' directory at the root
 cp -r models/* "$ABS_MODELS_DIR/"
 
+# Copy binary (for local execution)
+echo "Copying binary..."
+mkdir -p "$ROOT_DIR/bin"
+cp realesrgan-ncnn-vulkan "$ROOT_DIR/bin/"
+chmod +x "$ROOT_DIR/bin/realesrgan-ncnn-vulkan"
+
 # Cleanup
 cd "$ROOT_DIR"
 rm -rf "$TEMP_DIR"

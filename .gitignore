@@ -36,3 +36,11 @@ test_upscaled.png
 test_output.png
 test/testdata/sample_images/*
 !test/testdata/sample_images/.keep
+
+# Root level binaries and temp images
+/main
+/*.webp
+/*.png
+/*.jpg
+/*.json
+

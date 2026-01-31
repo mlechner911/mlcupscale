@@ -31,8 +31,25 @@ make docker-run
 
 *   The service will start on port **8089**.
 *   API endpoint: `http://localhost:8089/api/v1`
+*   **Swagger UI:** `http://localhost:8089/api/v1/docs`
 
-## 3. Test the Service
+## 3. Configuration
+
+You can customize the service by editing `config/config.yaml` (local) or `config/config.docker.yaml` (Docker).
+
+**Key Settings:**
+
+*   **`server.api_prefix`**: Change the API base path (default: `/api/v1`).
+*   **`server.auth_token`**: Set a secret token to secure the API (default: empty/disabled).
+*   **`features.enable_swagger`**: Enable/Disable Swagger UI (default: true).
+
+Example with Authentication:
+```yaml
+server:
+  auth_token: "my-secret-token"
+```
+
+## 4. Test the Service
 
 You can verify the service is running by checking the health endpoint:
 
@@ -47,7 +64,7 @@ Or run the automated integration tests:
 make test-integration
 ```
 
-## 4. Upscale an Image
+## 5. Upscale an Image
 
 ### Using the CLI Client
 
@@ -80,8 +97,8 @@ curl -X POST http://localhost:8089/api/v1/upscale \
 
 Then download the file using the URL provided in the JSON response.
 
-## 5. API Documentation
+## 6. API Documentation
 
-For full API details, see the [OpenAPI Specification](openapi.yaml).
+For full API details, see the **Swagger UI** running at `/api/v1/docs` or the [OpenAPI Specification](openapi.yaml).
 
 ```

@@ -10,18 +10,21 @@ import (
     "time"
 )
 
+// Config holds the configuration settings for the storage manager.
 type Config struct {
-    UploadDir         string
-    OutputDir         string
-    MaxFileSizeMB     int64
-    CleanupAfterHours int
-    RetentionPolicy   string
+    UploadDir       string
+    OutputDir       string
+    MaxFileSizeMB   int64
+    CleanupTTL      time.Duration
+    RetentionPolicy string
 }
 
+// Manager handles file system operations for uploads and outputs.
 type Manager struct {
     config Config
 }
 
+// NewManager creates a new storage manager and ensures the necessary directories exist.
 func NewManager(config Config) (*Manager, error) {
     if err := os.MkdirAll(config.UploadDir, 0755); err != nil {
         return nil, fmt.Errorf("failed to create upload dir: %w", err)
@@ -34,6 +37,8 @@ func NewManager(config Config) (*Manager, error) {
     return &Manager{config: config}, nil
 }
 
+// SaveUpload saves a byte slice to the upload directory with a unique filename.
+// It checks if the file size exceeds the configured maximum.
 func (m *Manager) SaveUpload(filename string, data []byte) (string, error) {
     sizeMB := int64(len(data)) / (1024 * 1024)
     if sizeMB > m.config.MaxFileSizeMB {
@@ -51,6 +56,7 @@ func (m *Manager) SaveUpload(filename string, data []byte) (string, error) {
     return path, nil
 }
 
+// GetOutputPath generates the full path for an output file based on the job ID.
 func (m *Manager) GetOutputPath(jobID, originalFilename string) string {
     ext := filepath.Ext(originalFilename)
     if ext == "" {
@@ -61,12 +67,14 @@ func (m *Manager) GetOutputPath(jobID, originalFilename string) string {
         fmt.Sprintf("%s_upscaled%s", jobID, ext))
 }
 
+// GetOutputDir returns the configured output directory path.
 func (m *Manager) GetOutputDir() string {
     return m.config.OutputDir
 }
 
+// CleanupOldFiles removes files in the upload and output directories that are older than the configured retention period.
 func (m *Manager) CleanupOldFiles() error {
-    cutoff := time.Now().Add(-time.Duration(m.config.CleanupAfterHours) * time.Hour)
+    cutoff := time.Now().Add(-m.config.CleanupTTL)
     
     for _, dir := range []string{m.config.UploadDir, m.config.OutputDir} {
         if err := m.cleanupDir(dir, cutoff); err != nil {
@@ -77,6 +85,7 @@ func (m *Manager) CleanupOldFiles() error {
     return nil
 }
 
+// cleanupDir iterates through a directory and removes files older than the cutoff time.
 func (m *Manager) cleanupDir(dir string, cutoff time.Time) error {
     entries, err := os.ReadDir(dir)
     if err != nil {
@@ -103,6 +112,10 @@ func (m *Manager) cleanupDir(dir string, cutoff time.Time) error {
 
 func (m *Manager) DeleteFile(path string) error {
     return os.Remove(path)
+}
+
+func (m *Manager) ShouldDeleteAfterDownload() bool {
+    return m.config.RetentionPolicy == "delete_after_download"
 }
 
 func sanitizeFilename(filename string) string {

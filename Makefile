@@ -3,7 +3,7 @@
 
 # Variables
 APP_NAME := upscale-service
-VERSION := 1.0.0
+VERSION := $(shell cat VERSION)
 BUILD_DIR := build
 SERVER_BIN := $(BUILD_DIR)/upscale-server
 CLIENT_BIN := $(BUILD_DIR)/upscale-client
@@ -28,13 +28,13 @@ build: build-server build-client
 build-server:
 	@echo "Building server..."
 	@mkdir -p $(BUILD_DIR)
-	go build -ldflags="-s -w -X main.version=$(VERSION)" -o $(SERVER_BIN) ./cmd/server
+	go build -ldflags="-s -w -X upscale-service/internal/version.Version=$(VERSION)" -o $(SERVER_BIN) ./cmd/server
 
 ## build-client: Build the client binary
 build-client:
 	@echo "Building client..."
 	@mkdir -p $(BUILD_DIR)
-	go build -ldflags="-s -w" -o $(CLIENT_BIN) ./cmd/client
+	go build -ldflags="-s -w -X upscale-service/internal/version.Version=$(VERSION)" -o $(CLIENT_BIN) ./cmd/client
 
 ## clean: Remove build artifacts and temporary files
 clean:

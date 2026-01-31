@@ -1,0 +1,620 @@
+2026/01/30 15:32:12 Starting Upscale Service v1.0.0
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /api/v1/upscale           --> upscale-service/internal/api.(*Handler).HandleUpscale-fm (5 handlers)
+[GIN-debug] GET    /api/v1/download/:job_id  --> upscale-service/internal/api.(*Handler).HandleDownload-fm (5 handlers)
+[GIN-debug] GET    /api/v1/status/:job_id    --> upscale-service/internal/api.(*Handler).HandleStatus-fm (5 handlers)
+[GIN-debug] POST   /api/v1/cancel/:job_id    --> upscale-service/internal/api.(*Handler).HandleCancel-fm (5 handlers)
+[GIN-debug] GET    /api/v1/models            --> upscale-service/internal/api.(*Handler).HandleModels-fm (5 handlers)
+[GIN-debug] GET    /api/v1/health            --> upscale-service/internal/api.(*Handler).HandleHealth-fm (5 handlers)
+2026/01/30 15:32:12 Swagger UI enabled at /api/v1/docs
+[GIN-debug] GET    /api/v1/openapi.yaml      --> main.main.(*RouterGroup).StaticFile.func7 (5 handlers)
+[GIN-debug] HEAD   /api/v1/openapi.yaml      --> main.main.(*RouterGroup).StaticFile.func7 (5 handlers)
+[GIN-debug] GET    /api/v1/docs              --> main.main.(*RouterGroup).StaticFile.func8 (5 handlers)
+[GIN-debug] HEAD   /api/v1/docs              --> main.main.(*RouterGroup).StaticFile.func8 (5 handlers)
+2026/01/30 15:32:12 Server listening on 0.0.0.0:8089/api/v1
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on 0.0.0.0:8089
+[GIN] 2026/01/30 - 15:32:35 | 200 |      92.984µs |             ::1 | GET      "/api/v1/health"
+[GIN] 2026/01/30 - 15:34:31 | 200 |      99.939µs |             ::1 | GET      "/api/v1/health"
+[GIN] 2026/01/30 - 15:35:01 | 200 |      490.57µs |             ::1 | GET      "/api/v1/models"
+[GIN] 2026/01/30 - 15:35:06 | 200 |      94.409µs |             ::1 | GET      "/api/v1/models"
+[GIN] 2026/01/30 - 15:35:36 | 200 |     260.195µs |       127.0.0.1 | GET      "/api/v1/models"
+[GIN] 2026/01/30 - 15:39:19 | 202 |    4.202111ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+Upscaler Output: 0.00%
+Upscaler Output: 11.11%
+Upscaler Output: 22.22%
+Upscaler Output: 33.33%
+Upscaler Output: 44.44%
+Upscaler Output: 55.56%
+Upscaler Output: 66.67%
+Upscaler Output: 77.78%
+Upscaler Output: 88.89%
+[GIN] 2026/01/30 - 15:39:29 | 200 |      20.088µs |       127.0.0.1 | GET      "/api/v1/status/1769787559130152108"
+[GIN] 2026/01/30 - 15:39:39 | 200 |      58.124µs |       127.0.0.1 | GET      "/api/v1/status/1769787559130152108"
+[GIN] 2026/01/30 - 15:40:53 | 202 |    1.643105ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+Upscaler Output: 0.00%
+Upscaler Output: 11.11%
+Upscaler Output: 22.22%
+Upscaler Output: 33.33%
+Upscaler Output: 44.44%
+Upscaler Output: 55.56%
+Upscaler Output: 66.67%
+Upscaler Output: 77.78%
+Upscaler Output: 88.89%
+[GIN] 2026/01/30 - 15:41:03 | 200 |      20.929µs |       127.0.0.1 | GET      "/api/v1/status/1769787653487547091"
+[GIN] 2026/01/30 - 15:41:13 | 200 |      58.752µs |       127.0.0.1 | GET      "/api/v1/status/1769787653487547091"
+[GIN] 2026/01/30 - 15:41:13 | 200 |    9.853302ms |       127.0.0.1 | GET      "/api/v1/download/1769787653487547091"
+[GIN] 2026/01/30 - 15:41:34 | 202 |    9.893318ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+Upscaler Output: 0.00%
+Upscaler Output: 2.78%
+Upscaler Output: 5.56%
+Upscaler Output: 8.33%
+Upscaler Output: 11.11%
+Upscaler Output: 13.89%
+Upscaler Output: 16.67%
+[GIN] 2026/01/30 - 15:41:44 | 200 |      29.155µs |       127.0.0.1 | GET      "/api/v1/status/1769787694815312395"
+Upscaler Output: 19.44%
+Upscaler Output: 22.22%
+Upscaler Output: 25.00%
+Upscaler Output: 27.78%
+Upscaler Output: 30.56%
+Upscaler Output: 33.33%
+Upscaler Output: 36.11%
+Upscaler Output: 38.89%
+[GIN] 2026/01/30 - 15:41:54 | 200 |      25.072µs |       127.0.0.1 | GET      "/api/v1/status/1769787694815312395"
+Upscaler Output: 41.67%
+Upscaler Output: 44.44%
+Upscaler Output: 47.22%
+Upscaler Output: 50.00%
+Upscaler Output: 52.78%
+Upscaler Output: 55.56%
+Upscaler Output: 58.33%
+Upscaler Output: 61.11%
+Upscaler Output: 63.89%
+[GIN] 2026/01/30 - 15:42:04 | 200 |      25.852µs |       127.0.0.1 | GET      "/api/v1/status/1769787694815312395"
+Upscaler Output: 66.67%
+Upscaler Output: 69.44%
+Upscaler Output: 72.22%
+Upscaler Output: 75.00%
+Upscaler Output: 77.78%
+Upscaler Output: 80.56%
+Upscaler Output: 83.33%
+Upscaler Output: 86.11%
+Upscaler Output: 88.89%
+Upscaler Output: 91.67%
+Upscaler Output: 94.44%
+Upscaler Output: 97.22%
+[GIN] 2026/01/30 - 15:42:14 | 200 |      20.943µs |       127.0.0.1 | GET      "/api/v1/status/1769787694815312395"
+[GIN] 2026/01/30 - 15:42:24 | 200 |      68.021µs |       127.0.0.1 | GET      "/api/v1/status/1769787694815312395"
+[GIN] 2026/01/30 - 15:42:24 | 200 |    8.436881ms |       127.0.0.1 | GET      "/api/v1/download/1769787694815312395"
+[GIN] 2026/01/30 - 15:43:06 | 202 |   28.305151ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+Upscaler Output: 0.00%
+Upscaler Output: 0.83%
+Upscaler Output: 1.65%
+Upscaler Output: 2.48%
+Upscaler Output: 3.31%
+Upscaler Output: 4.13%
+[GIN] 2026/01/30 - 15:43:16 | 200 |      62.971µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 4.96%
+Upscaler Output: 5.79%
+Upscaler Output: 6.61%
+Upscaler Output: 7.44%
+Upscaler Output: 8.26%
+Upscaler Output: 9.09%
+Upscaler Output: 9.92%
+Upscaler Output: 10.74%
+[GIN] 2026/01/30 - 15:43:26 | 200 |      45.367µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 11.57%
+Upscaler Output: 12.40%
+Upscaler Output: 13.22%
+Upscaler Output: 14.05%
+Upscaler Output: 14.88%
+Upscaler Output: 15.70%
+[GIN] 2026/01/30 - 15:43:36 | 200 |      25.081µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 16.53%
+Upscaler Output: 17.36%
+Upscaler Output: 18.18%
+Upscaler Output: 19.01%
+Upscaler Output: 19.83%
+Upscaler Output: 20.66%
+Upscaler Output: 21.49%
+[GIN] 2026/01/30 - 15:43:46 | 200 |      22.131µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 22.31%
+Upscaler Output: 23.14%
+Upscaler Output: 23.97%
+Upscaler Output: 24.79%
+Upscaler Output: 25.62%
+Upscaler Output: 26.45%
+Upscaler Output: 27.27%
+[GIN] 2026/01/30 - 15:43:56 | 200 |       25.76µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 28.10%
+Upscaler Output: 28.93%
+Upscaler Output: 29.75%
+Upscaler Output: 30.58%
+Upscaler Output: 31.40%
+Upscaler Output: 32.23%
+[GIN] 2026/01/30 - 15:44:06 | 200 |      21.418µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 33.06%
+Upscaler Output: 33.88%
+Upscaler Output: 34.71%
+Upscaler Output: 35.54%
+Upscaler Output: 36.36%
+Upscaler Output: 37.19%
+Upscaler Output: 38.02%
+Upscaler Output: 38.84%
+[GIN] 2026/01/30 - 15:44:16 | 200 |      22.863µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 39.67%
+Upscaler Output: 40.50%
+Upscaler Output: 41.32%
+Upscaler Output: 42.15%
+Upscaler Output: 42.98%
+Upscaler Output: 43.80%
+Upscaler Output: 44.63%
+[GIN] 2026/01/30 - 15:44:26 | 200 |      26.035µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 45.45%
+Upscaler Output: 46.28%
+Upscaler Output: 47.11%
+Upscaler Output: 47.93%
+Upscaler Output: 48.76%
+Upscaler Output: 49.59%
+Upscaler Output: 50.41%
+[GIN] 2026/01/30 - 15:44:36 | 200 |       28.81µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 51.24%
+Upscaler Output: 52.07%
+Upscaler Output: 52.89%
+Upscaler Output: 53.72%
+Upscaler Output: 54.55%
+Upscaler Output: 55.37%
+Upscaler Output: 56.20%
+Upscaler Output: 57.02%
+[GIN] 2026/01/30 - 15:44:46 | 200 |      27.965µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 57.85%
+Upscaler Output: 58.68%
+Upscaler Output: 59.50%
+Upscaler Output: 60.33%
+Upscaler Output: 61.16%
+Upscaler Output: 61.98%
+Upscaler Output: 62.81%
+Upscaler Output: 63.64%
+[GIN] 2026/01/30 - 15:44:56 | 200 |      39.144µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 64.46%
+Upscaler Output: 65.29%
+Upscaler Output: 66.12%
+Upscaler Output: 66.94%
+Upscaler Output: 67.77%
+Upscaler Output: 68.60%
+[GIN] 2026/01/30 - 15:45:06 | 200 |      32.034µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 69.42%
+Upscaler Output: 70.25%
+Upscaler Output: 71.07%
+Upscaler Output: 71.90%
+Upscaler Output: 72.73%
+Upscaler Output: 73.55%
+Upscaler Output: 74.38%
+Upscaler Output: 75.21%
+[GIN] 2026/01/30 - 15:45:16 | 200 |      32.499µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 76.03%
+Upscaler Output: 76.86%
+Upscaler Output: 77.69%
+Upscaler Output: 78.51%
+Upscaler Output: 79.34%
+Upscaler Output: 80.17%
+Upscaler Output: 80.99%
+Upscaler Output: 81.82%
+[GIN] 2026/01/30 - 15:45:26 | 200 |      34.608µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 82.64%
+Upscaler Output: 83.47%
+Upscaler Output: 84.30%
+Upscaler Output: 85.12%
+Upscaler Output: 85.95%
+Upscaler Output: 86.78%
+Upscaler Output: 87.60%
+[GIN] 2026/01/30 - 15:45:36 | 200 |     234.756µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+Upscaler Output: 88.43%
+Upscaler Output: 89.26%
+Upscaler Output: 90.08%
+Upscaler Output: 90.91%
+Upscaler Output: 91.74%
+Upscaler Output: 92.56%
+Upscaler Output: 93.39%
+Upscaler Output: 94.21%
+Upscaler Output: 95.04%
+Upscaler Output: 95.87%
+Upscaler Output: 96.69%
+Upscaler Output: 97.52%
+Upscaler Output: 98.35%
+Upscaler Output: 99.17%
+[GIN] 2026/01/30 - 15:45:46 | 200 |      19.998µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+[GIN] 2026/01/30 - 15:45:56 | 200 |      24.382µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+[GIN] 2026/01/30 - 15:46:06 | 200 |      66.634µs |       127.0.0.1 | GET      "/api/v1/status/1769787786009441165"
+[GIN] 2026/01/30 - 15:46:06 | 200 |   19.195826ms |       127.0.0.1 | GET      "/api/v1/download/1769787786009441165"
+[GIN] 2026/01/30 - 15:50:56 | 202 |    7.546281ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+Upscaler Output: 0.00%
+Upscaler Output: 2.78%
+Upscaler Output: 5.56%
+Upscaler Output: 8.33%
+Upscaler Output: 11.11%
+Upscaler Output: 13.89%
+Upscaler Output: 16.67%
+[GIN] 2026/01/30 - 15:51:06 | 200 |      42.873µs |       127.0.0.1 | GET      "/api/v1/status/1769788256570602373"
+Upscaler Output: 19.44%
+Upscaler Output: 22.22%
+Upscaler Output: 25.00%
+Upscaler Output: 27.78%
+Upscaler Output: 30.56%
+Upscaler Output: 33.33%
+Upscaler Output: 36.11%
+Upscaler Output: 38.89%
+[GIN] 2026/01/30 - 15:51:16 | 200 |      28.403µs |       127.0.0.1 | GET      "/api/v1/status/1769788256570602373"
+Upscaler Output: 41.67%
+Upscaler Output: 44.44%
+Upscaler Output: 47.22%
+Upscaler Output: 50.00%
+Upscaler Output: 52.78%
+Upscaler Output: 55.56%
+Upscaler Output: 58.33%
+Upscaler Output: 61.11%
+Upscaler Output: 63.89%
+[GIN] 2026/01/30 - 15:51:26 | 200 |      42.335µs |       127.0.0.1 | GET      "/api/v1/status/1769788256570602373"
+Upscaler Output: 66.67%
+Upscaler Output: 69.44%
+Upscaler Output: 72.22%
+Upscaler Output: 75.00%
+Upscaler Output: 77.78%
+Upscaler Output: 80.56%
+Upscaler Output: 83.33%
+Upscaler Output: 86.11%
+Upscaler Output: 88.89%
+Upscaler Output: 91.67%
+Upscaler Output: 94.44%
+Upscaler Output: 97.22%
+[GIN] 2026/01/30 - 15:51:35 | 200 |     112.803µs |       127.0.0.1 | GET      "/api/v1/models"
+[GIN] 2026/01/30 - 15:51:36 | 200 |      31.774µs |       127.0.0.1 | GET      "/api/v1/status/1769788256570602373"
+[GIN] 2026/01/30 - 15:51:46 | 200 |     108.766µs |       127.0.0.1 | GET      "/api/v1/status/1769788256570602373"
+[GIN] 2026/01/30 - 15:51:46 | 200 |    7.252398ms |       127.0.0.1 | GET      "/api/v1/download/1769788256570602373"
+[GIN] 2026/01/30 - 15:53:07 | 202 |    2.329008ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/30 - 15:53:17 | 200 |    1.713884ms |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:53:27 | 200 |      93.111µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:53:37 | 200 |      26.983µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:53:47 | 200 |      25.669µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 0.00%
+[GIN] 2026/01/30 - 15:53:57 | 200 |      24.208µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:54:07 | 200 |      25.118µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:54:17 | 200 |       24.72µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:54:27 | 200 |      26.731µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 11.11%
+[GIN] 2026/01/30 - 15:54:37 | 200 |      23.121µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:54:47 | 200 |      25.598µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 22.22%
+[GIN] 2026/01/30 - 15:54:57 | 200 |      25.025µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:55:07 | 200 |       23.08µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:55:17 | 200 |      30.915µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:55:27 | 200 |      22.613µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 33.33%
+[GIN] 2026/01/30 - 15:55:37 | 200 |      25.049µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:55:47 | 200 |     141.977µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:55:57 | 200 |      25.072µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:56:07 | 200 |      25.583µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 44.44%
+[GIN] 2026/01/30 - 15:56:17 | 200 |      26.848µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:56:27 | 200 |      56.272µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 55.56%
+[GIN] 2026/01/30 - 15:56:37 | 200 |       32.37µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:56:47 | 200 |      24.539µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:56:57 | 200 |       25.17µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 66.67%
+[GIN] 2026/01/30 - 15:57:07 | 200 |      24.967µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:57:17 | 200 |      29.958µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 77.78%
+[GIN] 2026/01/30 - 15:57:27 | 200 |      25.622µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+Upscaler Output: 88.89%
+[GIN] 2026/01/30 - 15:57:37 | 200 |      26.461µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:57:47 | 200 |      75.072µs |       127.0.0.1 | GET      "/api/v1/status/1769788387860199672"
+[GIN] 2026/01/30 - 15:57:47 | 200 |    6.529324ms |       127.0.0.1 | GET      "/api/v1/download/1769788387860199672"
+[GIN] 2026/01/30 - 16:12:16 | 202 |    2.977259ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/30 - 16:12:26 | 200 |      35.807µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:12:36 | 200 |      80.348µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:12:46 | 200 |      35.834µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:12:56 | 200 |      29.727µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 0.00%
+[GIN] 2026/01/30 - 16:13:06 | 200 |      20.995µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:13:16 | 200 |      25.298µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:13:26 | 200 |      25.462µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:13:36 | 200 |       28.91µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 1.67%
+[GIN] 2026/01/30 - 16:13:46 | 200 |      63.531µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:13:56 | 200 |      26.078µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:14:06 | 200 |      28.756µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 3.33%
+[GIN] 2026/01/30 - 16:14:16 | 200 |      38.111µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:14:26 | 200 |      51.591µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:14:36 | 200 |      29.308µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:14:46 | 200 |     106.093µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 5.00%
+[GIN] 2026/01/30 - 16:14:56 | 200 |      26.377µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:15:06 | 200 |      27.316µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:15:16 | 200 |      36.159µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:15:26 | 200 |      26.669µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 6.67%
+[GIN] 2026/01/30 - 16:15:36 | 200 |      28.192µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 8.33%
+[GIN] 2026/01/30 - 16:15:46 | 200 |      22.626µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:15:56 | 200 |      21.621µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:16:06 | 200 |      27.442µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:16:16 | 200 |      33.456µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 10.00%
+[GIN] 2026/01/30 - 16:16:26 | 200 |      28.239µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:16:36 | 200 |      23.235µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:16:46 | 200 |      45.328µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:16:56 | 200 |      26.668µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 11.67%
+[GIN] 2026/01/30 - 16:17:06 | 200 |        26.5µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:17:16 | 200 |      25.942µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:17:26 | 200 |      34.365µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:17:36 | 200 |      25.869µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 13.33%
+[GIN] 2026/01/30 - 16:17:46 | 200 |      28.935µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:17:56 | 200 |      28.495µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:18:06 | 200 |       22.04µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:18:16 | 200 |      25.237µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 15.00%
+[GIN] 2026/01/30 - 16:18:26 | 200 |      223.96µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:18:36 | 200 |      53.093µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:18:46 | 200 |       24.38µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:18:56 | 200 |      40.798µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 16.67%
+[GIN] 2026/01/30 - 16:19:06 | 200 |      25.857µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 18.33%
+[GIN] 2026/01/30 - 16:19:16 | 200 |       25.38µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:19:26 | 200 |      27.586µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:19:36 | 200 |      32.234µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 20.00%
+[GIN] 2026/01/30 - 16:19:46 | 200 |      28.145µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:19:56 | 200 |      34.865µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:20:06 | 200 |      27.746µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:20:16 | 200 |      26.478µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 21.67%
+[GIN] 2026/01/30 - 16:20:26 | 200 |      31.822µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:20:36 | 200 |      47.998µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:20:46 | 200 |      25.886µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:20:56 | 200 |      51.843µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 23.33%
+[GIN] 2026/01/30 - 16:21:06 | 200 |       21.66µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:21:16 | 200 |      25.025µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:21:26 | 200 |      27.074µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:21:36 | 200 |      25.171µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+Upscaler Output: 25.00%
+[GIN] 2026/01/30 - 16:21:46 | 200 |      21.004µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:21:56 | 200 |      27.233µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:22:06 | 200 |      25.737µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:22:16 | 200 |      30.531µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:22:26 | 200 |      50.094µs |       127.0.0.1 | GET      "/api/v1/status/1769789536424914661"
+[GIN] 2026/01/30 - 16:35:43 | 202 |   16.350277ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/30 - 16:35:53 | 200 |      28.741µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:36:03 | 200 |      35.602µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:36:13 | 200 |      56.236µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:36:23 | 200 |      24.575µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 0.00%
+[GIN] 2026/01/30 - 16:36:33 | 200 |      25.983µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:36:43 | 200 |      25.273µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:36:53 | 200 |      25.828µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:37:03 | 200 |      26.154µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 0.83%
+[GIN] 2026/01/30 - 16:37:13 | 200 |      25.122µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:37:23 | 200 |      25.208µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:37:33 | 200 |       26.14µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 1.65%
+[GIN] 2026/01/30 - 16:37:43 | 200 |       24.54µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:37:53 | 200 |       52.25µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:38:03 | 200 |     107.673µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:38:13 | 200 |      30.018µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 2.48%
+[GIN] 2026/01/30 - 16:38:23 | 200 |      26.212µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:38:33 | 200 |     104.285µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:38:43 | 200 |      28.456µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:38:53 | 200 |      26.925µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 3.31%
+[GIN] 2026/01/30 - 16:39:03 | 200 |      25.913µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:39:13 | 200 |      27.463µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:39:23 | 200 |      25.624µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:39:33 | 200 |      21.226µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 4.13%
+[GIN] 2026/01/30 - 16:39:43 | 200 |      21.744µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:39:53 | 200 |      26.388µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:40:03 | 200 |      26.859µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:40:13 | 200 |      28.565µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 4.96%
+[GIN] 2026/01/30 - 16:40:23 | 200 |     240.813µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:40:33 | 200 |       25.81µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:40:43 | 200 |      33.105µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:40:53 | 200 |      29.065µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 5.79%
+[GIN] 2026/01/30 - 16:41:03 | 200 |      25.543µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:41:13 | 200 |      24.955µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:41:23 | 200 |      25.187µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:41:33 | 200 |      25.864µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 6.61%
+[GIN] 2026/01/30 - 16:41:43 | 200 |      23.865µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:41:53 | 200 |      27.029µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:42:03 | 200 |      62.324µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:42:13 | 200 |      33.311µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 7.44%
+[GIN] 2026/01/30 - 16:42:23 | 200 |      28.207µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 8.26%
+[GIN] 2026/01/30 - 16:42:33 | 200 |       30.48µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:42:43 | 200 |      24.743µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:42:53 | 200 |      25.243µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:43:03 | 200 |      25.575µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 9.09%
+[GIN] 2026/01/30 - 16:43:13 | 200 |      28.596µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:43:23 | 200 |     137.741µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:43:33 | 200 |      25.328µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:43:43 | 200 |      52.289µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:43:53 | 200 |      27.964µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 9.92%
+[GIN] 2026/01/30 - 16:44:03 | 200 |        28.7µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:44:13 | 200 |      29.991µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:44:23 | 200 |      48.096µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:44:33 | 200 |      23.431µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 10.74%
+[GIN] 2026/01/30 - 16:44:43 | 200 |       36.44µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:44:53 | 200 |      26.108µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:45:03 | 200 |       29.78µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:45:13 | 200 |      25.525µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+Upscaler Output: 11.57%
+[GIN] 2026/01/30 - 16:45:23 | 200 |      26.065µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:45:33 | 200 |      21.029µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:45:43 | 200 |      26.933µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:45:53 | 200 |      52.459µs |       127.0.0.1 | GET      "/api/v1/status/1769790943940903453"
+[GIN] 2026/01/30 - 16:50:35 | 202 |    1.476308ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/30 - 16:50:45 | 200 |      35.582µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+[GIN] 2026/01/30 - 16:50:55 | 200 |      27.299µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+[GIN] 2026/01/30 - 16:51:05 | 200 |      31.595µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+[GIN] 2026/01/30 - 16:51:15 | 200 |      24.516µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+Upscaler Output: 0.00%
+[GIN] 2026/01/30 - 16:51:25 | 200 |      24.106µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+Upscaler Output: 25.00%
+[GIN] 2026/01/30 - 16:51:35 | 200 |      25.282µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+Upscaler Output: 50.00%
+[GIN] 2026/01/30 - 16:51:45 | 200 |       47.44µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+Upscaler Output: 75.00%
+[GIN] 2026/01/30 - 16:51:55 | 200 |     124.321µs |       127.0.0.1 | GET      "/api/v1/status/1769791835872300596"
+[GIN] 2026/01/30 - 16:51:55 | 200 |    1.324047ms |       127.0.0.1 | GET      "/api/v1/download/1769791835872300596"
+[GIN] 2026/01/30 - 16:52:21 | 200 |     236.027µs |       127.0.0.1 | GET      "/api/v1/models"
+[GIN] 2026/01/30 - 16:52:51 | 202 |     556.266µs |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/30 - 16:53:01 | 200 |      28.476µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+[GIN] 2026/01/30 - 16:53:11 | 200 |       26.71µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+[GIN] 2026/01/30 - 16:53:21 | 200 |      22.064µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+[GIN] 2026/01/30 - 16:53:31 | 200 |      25.182µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+Upscaler Output: 0.00%
+[GIN] 2026/01/30 - 16:53:41 | 200 |     124.195µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+Upscaler Output: 25.00%
+[GIN] 2026/01/30 - 16:53:51 | 200 |      27.129µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+Upscaler Output: 50.00%
+[GIN] 2026/01/30 - 16:54:01 | 200 |      24.066µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+Upscaler Output: 75.00%
+[GIN] 2026/01/30 - 16:54:11 | 200 |      90.211µs |       127.0.0.1 | GET      "/api/v1/status/1769791971751899868"
+[GIN] 2026/01/30 - 16:54:11 | 200 |    2.090271ms |       127.0.0.1 | GET      "/api/v1/download/1769791971751899868"
+[GIN] 2026/01/31 - 05:09:02 | 200 |     209.336µs |       127.0.0.1 | GET      "/api/v1/models"
+[GIN] 2026/01/31 - 10:55:34 | 200 |     232.345µs |       127.0.0.1 | GET      "/api/v1/models"
+[GIN] 2026/01/31 - 10:56:08 | 202 |    1.786054ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/31 - 10:56:18 | 200 |      33.407µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 0.00%
+[GIN] 2026/01/31 - 10:56:28 | 200 |      28.179µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 11.11%
+[GIN] 2026/01/31 - 10:56:38 | 200 |      79.393µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 22.22%
+[GIN] 2026/01/31 - 10:56:48 | 200 |      24.579µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 33.33%
+[GIN] 2026/01/31 - 10:56:58 | 200 |      45.877µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 44.44%
+[GIN] 2026/01/31 - 10:57:08 | 200 |      21.703µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 55.56%
+[GIN] 2026/01/31 - 10:57:18 | 200 |      28.379µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 66.67%
+[GIN] 2026/01/31 - 10:57:28 | 200 |      27.485µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+Upscaler Output: 77.78%
+Upscaler Output: 88.89%
+[GIN] 2026/01/31 - 10:57:38 | 200 |      37.197µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+[GIN] 2026/01/31 - 10:57:48 | 200 |      95.338µs |       127.0.0.1 | GET      "/api/v1/status/1769856968657539513"
+[GIN] 2026/01/31 - 10:57:48 | 200 |    6.326834ms |       127.0.0.1 | GET      "/api/v1/download/1769856968657539513"
+[GIN] 2026/01/31 - 14:28:56 | 202 |    2.591576ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/31 - 14:29:06 | 200 |      32.959µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 0.00%
+[GIN] 2026/01/31 - 14:29:16 | 200 |      24.376µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 11.11%
+[GIN] 2026/01/31 - 14:29:26 | 200 |      21.618µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 22.22%
+[GIN] 2026/01/31 - 14:29:36 | 200 |      24.783µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 33.33%
+[GIN] 2026/01/31 - 14:29:46 | 200 |      50.045µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 44.44%
+[GIN] 2026/01/31 - 14:29:56 | 200 |      26.159µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 55.56%
+[GIN] 2026/01/31 - 14:30:06 | 200 |      21.606µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 66.67%
+[GIN] 2026/01/31 - 14:30:16 | 200 |      69.155µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+Upscaler Output: 77.78%
+Upscaler Output: 88.89%
+[GIN] 2026/01/31 - 14:30:26 | 200 |      23.232µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+[GIN] 2026/01/31 - 14:30:36 | 200 |      72.704µs |       127.0.0.1 | GET      "/api/v1/status/1769869736565292234"
+[GIN] 2026/01/31 - 14:30:36 | 200 |    4.766476ms |       127.0.0.1 | GET      "/api/v1/download/1769869736565292234"
+[GIN] 2026/01/31 - 14:32:00 | 202 |    2.475664ms |       127.0.0.1 | POST     "/api/v1/upscale"
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  queueC=0[1]  queueG=0[1]  queueT=0[1]
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  bugsbn1=0  bugbilz=0  bugcopc=0  bugihfa=0
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  fp16-p/s/a=1/1/1  int8-p/s/a=1/1/1
+Upscaler Output: [0 llvmpipe (LLVM 20.1.2, 256 bits)]  subgroup=8  basic=1  vote=1  ballot=1  shuffle=1
+[GIN] 2026/01/31 - 14:32:10 | 200 |      30.505µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 0.00%
+[GIN] 2026/01/31 - 14:32:20 | 200 |      24.814µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 11.11%
+[GIN] 2026/01/31 - 14:32:30 | 200 |      49.772µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 22.22%
+[GIN] 2026/01/31 - 14:32:40 | 200 |      27.727µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 33.33%
+[GIN] 2026/01/31 - 14:32:50 | 200 |      31.334µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+[GIN] 2026/01/31 - 14:33:00 | 200 |      35.359µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 44.44%
+Upscaler Output: 55.56%
+[GIN] 2026/01/31 - 14:33:10 | 200 |      26.512µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 66.67%
+[GIN] 2026/01/31 - 14:33:20 | 200 |      28.687µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+Upscaler Output: 77.78%
+Upscaler Output: 88.89%
+[GIN] 2026/01/31 - 14:33:30 | 200 |      25.238µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+[GIN] 2026/01/31 - 14:33:40 | 200 |      93.381µs |       127.0.0.1 | GET      "/api/v1/status/1769869920092388534"
+[GIN] 2026/01/31 - 14:33:40 | 200 |    5.382003ms |       127.0.0.1 | GET      "/api/v1/download/1769869920092388534"
