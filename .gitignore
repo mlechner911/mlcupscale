@@ -32,10 +32,12 @@ Thumbs.db
 
 # Temp
 /tmp/
-test_upscaled.png
+test/upscaled.png
 test_output.png
 test/testdata/sample_images/*
 !test/testdata/sample_images/.keep
+test/results/*
+test/testdata/generated/*
 
 # Root level binaries and temp images
 /main
