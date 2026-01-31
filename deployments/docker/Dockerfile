@@ -40,8 +40,9 @@ RUN go mod download
 
 COPY . .
 
+ARG VERSION=dev
 RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags="-s -w" \
+    -ldflags="-s -w -X upscale-service/internal/version.Version=${VERSION}" \
     -o upscale-server \
     ./cmd/server
 
@@ -67,7 +68,7 @@ WORKDIR /app
 COPY --from=ncnn-builder /build/Real-ESRGAN-ncnn-vulkan/src/build/realesrgan-ncnn-vulkan ./bin/
 COPY --from=go-builder /app/upscale-server ./
 
-# Copy models (we assume they are in the build context or we download them here? 
+# Copy models (we assume they are in the build context or we download them here?
 # Better to copy from context if "download-models.sh" was run before build, OR download in a stage)
 # The plan says "COPY models ./models/" implying they are local.
 COPY models ./models/

@@ -66,6 +66,8 @@ The server will start at `http://localhost:8089`.
 
 ### 4. Run with Docker
 
+The included `deployments/docker/Dockerfile` builds a production-ready container image.
+
 Build and run using Docker Compose:
 
 ```bash
@@ -76,6 +78,10 @@ To stop the service:
 ```bash
 make docker-stop
 ```
+
+**Note on GPU Support in Docker:**
+Running this application in Docker with GPU acceleration requires the specific GPU runtime drivers for your hardware (e.g., NVIDIA Container Toolkit). Without mounting the GPU and proper drivers, the application will fall back to CPU processing, which is significantly slower.
+The default Dockerfile does not include proprietary driver layers.
 
 ### 5. Build for macOS (Remote)
 
@@ -106,7 +112,10 @@ task macos:stop
 The API is fully documented with OpenAPI/Swagger.
 Once the server is running, visit **http://localhost:8089/api/v1/docs** for the interactive UI.
 
-For detailed endpoint documentation, examples, and parameter descriptions, see the **[API User Guide](docs/API_GUIDE.md)** or view the raw **[OpenAPI Specification](docs/openapi.yaml)**.
+Documentation resources:
+*   **[API User Guide](docs/API_GUIDE.md)**: Detailed endpoint documentation and examples.
+*   **[OpenAPI Specification](docs/openapi.yaml)**: Raw Swagger/OpenAPI definition.
+*   **[Swagger UI HTML](docs/swagger.html)**: Standalone Swagger UI viewer.
 
 ### Quick Examples
 

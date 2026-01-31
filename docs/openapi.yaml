@@ -4,7 +4,9 @@ info:
   description: |
     A REST API for AI-based image upscaling using Real-ESRGAN.
 
-    This service allows you to upload images and upscale them by 2x, 3x, or 4x using various optimized models.
+    This service allows you to upload images and upscale them by 2x, 3x,
+     or 4x using various optimized models.
+     Note: I have good results with 2x and 3x, but not with 4x on certain images.
   version: 1.0.0
   contact:
     name: Michael Lechner

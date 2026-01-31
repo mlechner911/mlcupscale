@@ -2,6 +2,7 @@ version: '3'
 vars:
   VERSION:
     sh: cat VERSION
+  BUILD_DIR: build
   # Default variables for remote Mac tasks. Override with CLI vars.
   # e.g. task macos:build MAC_HOST=user@192.168.1.50
   MAC_HOST: '{{.MAC_HOST | default "user@remote-mac"}}'
@@ -9,6 +10,100 @@ vars:
   MAC_API_PORT: '{{.MAC_API_PORT | default "8089"}}'
 
 tasks:
+  default:
+    cmds:
+      - task --list
+
+  # ============================================================================
+  # BUILD & RUN
+  # ============================================================================
+
+  build:
+    desc: Build both server and client binaries
+    deps: [build-server, build-client]
+
+  build-server:
+    desc: Build the server binary
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - go build -ldflags="-s -w -X upscale-service/internal/version.Version={{.VERSION}}" -o {{.BUILD_DIR}}/upscale-server ./cmd/server
+    sources:
+      - cmd/server/**/*.go
+      - internal/**/*.go
+    generates:
+      - '{{.BUILD_DIR}}/upscale-server'
+
+  build-client:
+    desc: Build the client binary
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - go build -ldflags="-s -w -X upscale-service/internal/version.Version={{.VERSION}}" -o {{.BUILD_DIR}}/upscale-client ./cmd/client
+    sources:
+      - cmd/client/**/*.go
+      - internal/**/*.go
+    generates:
+      - '{{.BUILD_DIR}}/upscale-client'
+
+  run:
+    desc: Run the server locally
+    deps: [build-server]
+    cmds:
+      - ./{{.BUILD_DIR}}/upscale-server
+
+  clean:
+    desc: Remove build artifacts and temporary files
+    cmds:
+      - rm -rf {{.BUILD_DIR}}
+      - rm -f test_upscaled.png test_output.png
+      - rm -rf test/testdata/sample_images/test.png
+
+  models:
+    desc: Download the Real-ESRGAN models
+    cmds:
+      - ./scripts/download-models.sh
+
+  # ============================================================================
+  # DOCKER
+  # ============================================================================
+
+  docker-build:
+    desc: Build the Docker image
+    cmds:
+      - docker build -t upscale-service:latest -f deployments/docker/Dockerfile .
+
+  docker-run:
+    desc: Run the service using Docker Compose
+    cmds:
+      - docker compose -f deployments/docker/docker-compose.yml up -d --build
+
+  docker-stop:
+    desc: Stop the Docker Compose service
+    cmds:
+      - docker compose -f deployments/docker/docker-compose.yml down
+
+  docker-logs:
+    desc: View service logs
+    cmds:
+      - docker compose -f deployments/docker/docker-compose.yml logs -f
+
+  # ============================================================================
+  # TESTING
+  # ============================================================================
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - go test -v ./internal/...
+
+  test-integration:
+    desc: Run integration tests (requires server running on port 8089)
+    cmds:
+      - ./test/integration/test_api.sh
+
+  # ============================================================================
+  # MACOS REMOTE
+  # ============================================================================
+
   build-macos-app:
     desc: Copy code to Mac and build macOS .app bundle and DMG remotely
     vars:
@@ -80,36 +175,3 @@ tasks:
       - cmd: sleep 5
       - task: test-macos-health
       - task: test-macos-upscale
-
-  # ============================================================================
-  # LINUX / LOCAL TASKS
-  # ============================================================================
-
-  build:
-    desc: Build the server binary for Linux
-    cmds:
-      - go build -ldflags="-s -w -X upscale-service/internal/version.Version={{.VERSION}}" -o bin/upscale-server cmd/server/main.go
-    sources:
-      - cmd/server/main.go
-      - internal/**/*.go
-    generates:
-      - bin/upscale-server
-
-  run:
-    desc: Build and run the server locally
-    deps: [build]
-    cmds:
-      - ./bin/upscale-server -config config/config.yaml
-
-  test:
-    desc: Run unit tests
-    cmds:
-      - go test -v ./...
-
-  download-models:
-    desc: Download Real-ESRGAN models if missing
-    cmds:
-      - ./scripts/download-models.sh
-    status:
-      - test -d models
-      - test -f bin/realesrgan-ncnn-vulkan
