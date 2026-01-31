@@ -106,6 +106,8 @@ task macos:stop
 The API is fully documented with OpenAPI/Swagger.
 Once the server is running, visit **http://localhost:8089/api/v1/docs** for the interactive UI.
 
+For detailed endpoint documentation, examples, and parameter descriptions, see the **[API User Guide](docs/API_GUIDE.md)** or view the raw **[OpenAPI Specification](docs/openapi.yaml)**.
+
 ### Quick Examples
 
 #### Upscale an Image (Async)

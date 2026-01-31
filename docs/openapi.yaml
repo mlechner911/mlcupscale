@@ -3,7 +3,7 @@ info:
   title: Image Upscale Service
   description: |
     A REST API for AI-based image upscaling using Real-ESRGAN.
-    
+
     This service allows you to upload images and upscale them by 2x, 3x, or 4x using various optimized models.
   version: 1.0.0
   contact:
@@ -92,6 +92,10 @@ paths:
         '200':
           description: The upscaled image file.
           content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
             image/png:
               schema:
                 type: string
@@ -264,7 +268,7 @@ components:
         status_url:
           type: string
           description: Relative URL to check job status.
-    
+
     ImageSize:
       type: object
       properties:

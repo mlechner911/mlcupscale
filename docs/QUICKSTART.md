@@ -1,29 +1,41 @@
 # Quick Start Guide
 
-This guide will help you get the **Image Upscale Service** up and running in minutes using Docker.
+This guide will help you get the **Image Upscale Service** up and running in minutes.
 
 ## Prerequisites
 
-*   **Docker** (and Docker Compose Plugin) installed.
-*   **Make** (optional, but recommended).
-*   **Git**.
+*   **Linux/macOS**
+*   **Go 1.24+** (for building locally)
+*   **Task** (recommended) or **Make**
+*   **Docker** (optional, for containerized run)
 
 ## 1. Setup
 
 Clone the repository and download the required AI models:
 
 ```bash
-# Clone repo (if not already done)
+# Clone repo
 git clone <repository-url>
 cd upscale-service
 
-# Download models
+# Download models using Task
+task download-models
+
+# Or using Make
 make models
 ```
 
 ## 2. Start the Service
 
-The easiest way to run the service is with Docker. This handles all dependencies (ncnn, vulkan, etc.).
+### Option A: Run Locally (Recommended for dev)
+
+```bash
+task run
+# or
+make run
+```
+
+### Option B: Run with Docker
 
 ```bash
 make docker-run
@@ -32,6 +44,18 @@ make docker-run
 *   The service will start on port **8089**.
 *   API endpoint: `http://localhost:8089/api/v1`
 *   **Swagger UI:** `http://localhost:8089/api/v1/docs`
+
+### Option C: Run on Remote Mac (Apple Silicon)
+
+If you have a powerful Mac remotely, you can deploy and run there:
+
+```bash
+# Edit Taskfile.yml with your MAC_HOST or set it via env
+MAC_HOST=user@my-mac task macos:build
+MAC_HOST=user@my-mac task macos:start
+```
+
+## 3. Configuration
 
 ## 3. Configuration
 
@@ -71,7 +95,9 @@ make test-integration
 We provide a simple Go-based CLI client. Build it first:
 
 ```bash
-make client-build
+task build
+# or
+make build-client
 ```
 
 Then run it:
