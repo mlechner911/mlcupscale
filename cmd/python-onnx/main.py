@@ -49,6 +49,15 @@ def process_tile(session, img_tile):
     result = session.run(None, {input_name: img_input})[0]
     return post_process(result)
 
+def resize_output_if_needed(img, target_h, target_w):
+    h, w = img.shape[:2]
+    if h == target_h and w == target_w:
+        return img
+
+    # Use INTER_AREA for downscaling, INTER_CUBIC for upscaling
+    interp = cv2.INTER_AREA if h > target_h else cv2.INTER_CUBIC
+    return cv2.resize(img, (target_w, target_h), interpolation=interp)
+
 def upscale_image(session, img, scale, tile_size, padding):
     h, w, c = img.shape
 
@@ -64,6 +73,7 @@ def upscale_image(session, img, scale, tile_size, padding):
     if tile_size <= 0 or (w <= tile_size and h <= tile_size):
         log_progress(0, 100)
         res = process_tile(session, img)
+        res = resize_output_if_needed(res, out_h, out_w)
         log_progress(100, 100)
         return res
 
@@ -97,6 +107,11 @@ def upscale_image(session, img, scale, tile_size, padding):
 
             # Process
             out_tile = process_tile(session, tile)
+
+            # Resize tile if model output scale differs from requested scale
+            tile_h, tile_w = tile.shape[:2]
+            target_tile_h, target_tile_w = tile_h * scale, tile_w * scale
+            out_tile = resize_output_if_needed(out_tile, target_tile_h, target_tile_w)
 
             # Crop Output (remove padding)
             # Output padding is input_padding * scale
@@ -169,19 +184,39 @@ def main():
 
     # Session Options
     providers = []
+    available = ort.get_available_providers()
+    print(f"Available ONNX Providers: {available}", file=sys.stderr)
+
+    # Logic: If GPU ID is specified, try to use it. If -1 (Auto), try to find best provider.
     if args.gpu_id != -1:
-        # Try CUDA if available
-        if 'CUDAExecutionProvider' in ort.get_available_providers():
+        if 'CUDAExecutionProvider' in available:
              providers.append(('CUDAExecutionProvider', {'device_id': args.gpu_id}))
+        if 'CoreMLExecutionProvider' in available:
+             providers.append('CoreMLExecutionProvider')
+    else:
+        # Auto mode
+        if 'CoreMLExecutionProvider' in available:
+             providers.append('CoreMLExecutionProvider')
+        if 'CUDAExecutionProvider' in available:
+             providers.append('CUDAExecutionProvider')
 
     providers.append('CPUExecutionProvider')
     print(f"Loading model {model_file} with providers: {providers}", file=sys.stderr)
+    print(f"Model file exists: {os.path.exists(model_file)}", file=sys.stderr)
+    print(f"Model file size: {os.path.getsize(model_file)}", file=sys.stderr)
 
     try:
         sess = ort.InferenceSession(model_file, providers=providers)
     except Exception as e:
-        print(f"Error loading model: {e}", file=sys.stderr)
-        sys.exit(1)
+        print(f"Error loading model with providers {providers}: {e}", file=sys.stderr)
+        # Fallback to CPU
+        print("Falling back to CPUExecutionProvider...", file=sys.stderr)
+        providers = ['CPUExecutionProvider']
+        try:
+            sess = ort.InferenceSession(model_file, providers=providers)
+        except Exception as e2:
+             print(f"Error loading model with CPU fallback: {e2}", file=sys.stderr)
+             sys.exit(1)
 
     # Upscale
     start_time = time.time()

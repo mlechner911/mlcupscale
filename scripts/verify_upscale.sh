@@ -9,7 +9,7 @@ IMAGE_FILE="/tmp/test_tiny.png"
 
 # Generate a tiny 1x1 PNG (Red pixel)
 # 1x1 PNG Base64
-echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKwMTQAAAABJRU5ErkJggg==" | base64 -d > "$IMAGE_FILE"
+echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC" | base64 -d > "$IMAGE_FILE"
 
 echo "=== Verifying Upscale Service at $API_URL ==="
 echo "Generated test image at $IMAGE_FILE"
@@ -23,9 +23,25 @@ if [ "$HTTP_CODE" != "200" ]; then
 fi
 echo "Health OK."
 
+# Get Available Models
+echo "Checking available models..."
+MODELS_JSON=$(curl -s "$API_URL/models")
+echo "Available Models Response: $MODELS_JSON"
+
+# Extract the first model from the JSON list (simple parsing)
+# Assumes format {"models":["model1","model2"...]}
+MODEL_NAME=$(echo "$MODELS_JSON" | grep -o '"models":\["[^"]*"' | head -1 | sed 's/"models":\["//' | sed 's/"//')
+
+if [ -z "$MODEL_NAME" ] || [ "$MODEL_NAME" = "null" ]; then
+    echo "Could not auto-detect model. Using default 'realesrgan-x4plus'"
+    MODEL_NAME="realesrgan-x4plus"
+else
+    echo "Selected model for testing: $MODEL_NAME"
+fi
+
 # Submit Job
 echo "Submitting upscale job..."
-RESPONSE=$(curl -s -F "image=@$IMAGE_FILE" -F "model_name=realesrgan-x4plus" "$API_URL/upscale")
+RESPONSE=$(curl -s -F "image=@$IMAGE_FILE" -F "model_name=$MODEL_NAME" "$API_URL/upscale")
 # Simple grep parsing to avoid jq dependency
 JOB_ID=$(echo "$RESPONSE" | grep -o '"job_id":"[^"]*"' | cut -d'"' -f4)
 ERROR_MSG=$(echo "$RESPONSE" | grep -o '"error":"[^"]*"' | cut -d'"' -f4)

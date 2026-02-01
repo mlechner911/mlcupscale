@@ -105,7 +105,7 @@ tasks:
   # ============================================================================
 
   build-macos-app:
-    desc: Copy code to Mac and build macOS .app bundle and DMG remotely
+    desc: Copy code to Mac and build macOS .app bundle and DMG remotely (Python/ONNX version)
     vars:
       MAC_SRC: "~/mlcupscale_src"
     cmds:
@@ -115,11 +115,25 @@ tasks:
           exit 1
         fi
         echo "Syncing code to {{.MAC_HOST}}..."
-        rsync -az --delete --exclude 'bin/' --exclude 'build/' --exclude '.git/' --exclude 'data/outputs/' --exclude 'data/uploads/' ./ {{.MAC_HOST}}:{{.MAC_SRC}}
+        # Ensure we sync the python scripts and models
+        # Added -P for progress, removed -z for local LAN speed (compression slows down fast networks on binary files)
+        rsync -aP --delete \
+          --exclude 'bin/' \
+          --exclude 'build/' \
+          --exclude 'dist/' \
+          --exclude '.git/' \
+          --exclude '.venv/' \
+          --exclude '.vscode/' \
+          --exclude 'data/outputs/' \
+          --exclude 'data/uploads/' \
+          --exclude 'tmp/' \
+          ./ {{.MAC_HOST}}:{{.MAC_SRC}}
         echo "Running build script on Mac..."
         ssh {{.MAC_HOST}} 'cd {{.MAC_SRC}}/deployments/macos && ./build-macos-app.sh'
     sources:
       - ./cmd/server/main.go
+      - ./cmd/python-onnx/**/*
+      - ./models/*.onnx
       - ./deployments/macos/Info.plist
       - ./deployments/macos/build-macos-app.sh
     generates:
@@ -175,3 +189,24 @@ tasks:
       - cmd: sleep 5
       - task: test-macos-health
       - task: test-macos-upscale
+
+  # ============================================================================
+  # MACOS LOCAL (PYTHON)
+  # ============================================================================
+
+  setup-python:
+    desc: Create local .venv and install requirements (Mac/Linux)
+    cmds:
+      - python3 -m venv .venv
+      - .venv/bin/pip install -r cmd/python-onnx/requirements.txt
+    status:
+      - test -d .venv
+
+  run-macos-local:
+    desc: Run the server locally on Mac using Python implementation
+    deps: [setup-python, build-server]
+    cmds:
+      # Ensure executable permission for the wrapper script
+      - chmod +x scripts/upscale-onnx.sh
+      - ./build/upscale-server
+

@@ -47,3 +47,5 @@ test/testdata/generated/*
 /*.json
 
 .task/
+dist/
+server_log.txt

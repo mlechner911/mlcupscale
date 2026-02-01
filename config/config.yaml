@@ -8,7 +8,7 @@ server:
   max_request_size_mb: 100
 
 upscaler:
-  binary_path: "./bin/realesrgan-ncnn-vulkan"
+  binary_path: "./scripts/upscale-onnx.sh"
   models_path: "./models"
   default_model: "realesrgan-x4plus"
   default_scale: 4

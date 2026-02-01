@@ -373,6 +373,11 @@ func (s *Service) validate(req Request) error {
     }
 
     modelPath := filepath.Join(s.config.ModelsPath, req.ModelName)
+    // Check if ONNX
+    if _, err := os.Stat(modelPath + ".onnx"); err == nil {
+        return nil
+    }
+    // Check if standard NCNN
     if _, err := os.Stat(modelPath); os.IsNotExist(err) {
         // Try with .param and .bin extensions if directory check fails
         // RealESRGAN models usually come as .param and .bin files with the same name
@@ -384,49 +389,50 @@ func (s *Service) validate(req Request) error {
     return nil
 }
 
-// buildArgs constructs the command-line arguments for the upscaler binary.
+	// buildArgs constructs the command-line arguments for the upscaler binary.
 func (s *Service) buildArgs(req Request) []string {
-    args := []string{
-        "-i", req.InputPath,
-        "-o", req.OutputPath,
-        "-s", fmt.Sprintf("%d", req.Scale),
-        "-m", s.config.ModelsPath,
-        "-n", req.ModelName,
-        "-j", s.config.Threads,
-    }
+	args := []string{
+		"-i", req.InputPath,
+		"-o", req.OutputPath,
+		"-s", fmt.Sprintf("%d", req.Scale),
+		"-m", s.config.ModelsPath,
+		"-n", req.ModelName,
+		"-j", s.config.Threads,
+		"-t", "512", // Force tiling to prevent CoreML memory issues
+	}
+	// Note: We've hardcoded -t 512 above to fix 16k upscale issues.
+	// If the user supplied a custom TileSize in req, we could override it here,
+	// but for now, we force 512 for stability.
 
-    if req.TileSize > 0 {
-        args = append(args, "-t", fmt.Sprintf("%d", req.TileSize))
-    }
+	if !s.config.EnableGPU {
+		args = append(args, "-g", "-1")
+	} else if s.config.GPUID >= 0 {
+		args = append(args, "-g", fmt.Sprintf("%d", s.config.GPUID))
+	}
 
-    if !s.config.EnableGPU {
-        args = append(args, "-g", "-1")
-    } else if s.config.GPUID >= 0 {
-        args = append(args, "-g", fmt.Sprintf("%d", s.config.GPUID))
-    }
+	if req.Format != "" {
+		args = append(args, "-f", req.Format)
+	}
 
-    if req.Format != "" {
-        args = append(args, "-f", req.Format)
-    }
-
-    return args
+	return args
 }
 
-// getImageSize uses Go's image library to get image dimensions.
+// getImageSize reads the image dimensions from a file.
 func (s *Service) getImageSize(path string) (ImageSize, error) {
-    file, err := os.Open(path)
-    if err != nil {
-        return ImageSize{}, fmt.Errorf("failed to open image: %w", err)
-    }
-    defer file.Close()
+	file, err := os.Open(path)
+	if err != nil {
+		return ImageSize{}, fmt.Errorf("failed to open image: %w", err)
+	}
+	defer file.Close()
 
-    cfg, _, err := image.DecodeConfig(file)
-    if err != nil {
-        return ImageSize{}, fmt.Errorf("failed to decode image config: %w", err)
-    }
+	cfg, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return ImageSize{}, fmt.Errorf("failed to decode image config: %w", err)
+	}
 
-    return ImageSize{Width: cfg.Width, Height: cfg.Height}, nil
+	return ImageSize{Width: cfg.Width, Height: cfg.Height}, nil
 }
+
 
 // GetAvailableModels scans the models directory and returns a list of installed models.
 func (s *Service) GetAvailableModels() ([]ModelInfo, error) {
@@ -512,7 +518,11 @@ func copyFile(src, dst string) error {
         _ = out.Chmod(fi.Mode())
     }
 
-    return nil
+    if err := out.Sync(); err != nil {
+        return err
+    }
+
+    return out.Close()
 }
 
 // generateJobID creates a unique identifier for a job based on the current timestamp.

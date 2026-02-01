@@ -106,8 +106,8 @@ func (h *Handler) HandleUpscale(c *gin.Context) {
     }
     defer file.Close()
 
-    data := make([]byte, fileHeader.Size)
-    if _, err := file.Read(data); err != nil {
+    data, err := io.ReadAll(file)
+    if err != nil {
         c.JSON(http.StatusInternalServerError, UpscaleResponse{
             Success: false,
             Error:   "failed to read file data",

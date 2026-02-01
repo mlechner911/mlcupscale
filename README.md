@@ -118,6 +118,26 @@ task macos:logs
 task macos:stop
 ```
 
+### Alternative: ONNX Runtime (Experimental)
+
+The project includes an **experimental** Python-based ONNX Runtime upscaler for better performance on NVIDIA GPUs (via CUDA/TensorRT) and broader compatibility.
+
+To use it:
+1.  Install dependencies: `pip install onnxruntime-gpu opencv-python numpy basicsr`
+2.  **Generate ONNX Models**: The official models are distributed as PyTorch (`.pth`) files. Run the provided helper to download and convert them:
+    ```bash
+    python cmd/python-onnx/convert.py models/
+    ```
+3.  Update `config/config.yaml`:
+    ```yaml
+    upscaler:
+      binary_path: "./bin/upscale-onnx"
+    ```
+4.  Restart the server.
+
+The wrapper script `bin/upscale-onnx` calls `cmd/python-onnx/main.py`, which supports tiling (for large images) and GPU acceleration automatically.
+It mimics the progress reporting of the original binary, so the API progress endpoints work transparently.
+
 ## API Usage
 
 The API is fully documented with OpenAPI/Swagger.
