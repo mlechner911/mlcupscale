@@ -118,6 +118,19 @@ task macos:logs
 task macos:stop
 ```
 
+## Performance & Testing
+
+The service has been tested on **macOS (Apple Silicon)** upscaling massive images which typically fail on consumer hardware due to memory constraints.
+
+### Benchmarks (Mac Studio M2 Ultra)
+
+| Test Case | Method | Upscale Factor | Input Resolution | Output Resolution | Time |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Normal** | CoreML/ONNX | 4x | 1920x1080 (2K) | 7680x4320 (8K) | ~14s |
+| **Extreme** | CoreML/ONNX | 4x | 3840x2160 (4K) | 15360x8640 (16K) | ~58s |
+
+*Note: The "Extreme" test uses a specialized tiling strategy (512px tiles) to bypass CoreML graph size limits and avoid OOM crashes.*
+
 ### Alternative: ONNX Runtime (Experimental)
 
 The project includes an **experimental** Python-based ONNX Runtime upscaler for better performance on NVIDIA GPUs (via CUDA/TensorRT) and broader compatibility.
