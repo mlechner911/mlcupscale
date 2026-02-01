@@ -75,6 +75,17 @@ cp ../../models/*.onnx "$MACOS_DIR/models/" || echo "      ! Warning: No .onnx m
 # Also copy external data files if they exist
 cp ../../models/*.onnx.data "$MACOS_DIR/models/" 2>/dev/null || true
 
+# 4b. Download NCNN Binary (macOS)
+echo "      - Downloading NCNN Binary (macOS)..."
+curl -L -o "$BUILD_DIR/ncnn-mac.zip" "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesrgan-ncnn-vulkan-20220424-macos.zip"
+unzip -qo "$BUILD_DIR/ncnn-mac.zip" -d "$BUILD_DIR/ncnn_extracted"
+# The zip contains the binary at the root
+cp "$BUILD_DIR/ncnn_extracted/realesrgan-ncnn-vulkan" "$MACOS_DIR/bin/"
+chmod +x "$MACOS_DIR/bin/realesrgan-ncnn-vulkan"
+# Also copy the ncnn models included in the zip, just in case they are useful or user prefers them
+cp "$BUILD_DIR/ncnn_extracted/models/"*.bin "$MACOS_DIR/models/" 2>/dev/null || true
+cp "$BUILD_DIR/ncnn_extracted/models/"*.param "$MACOS_DIR/models/" 2>/dev/null || true
+
 # ---------------------------------------------------------
 # GO BUILD
 # ---------------------------------------------------------
@@ -96,7 +107,11 @@ cp config/config.yaml "$MACOS_DIR/config.yaml"
 # Update binary_path to point to our new compiled binary
 # Note: PyInstaller with --onedir creates the binary at ./bin/upscale-onnx/upscale-onnx
 # Use temp file instead of sed -i to avoid BSD/GNU sed differences on MacOS (user might have gnu-sed from brew)
-sed 's|binary_path:.*|binary_path: "./bin/upscale-onnx/upscale-onnx"|' "$MACOS_DIR/config.yaml" > "$MACOS_DIR/config.yaml.tmp" && mv "$MACOS_DIR/config.yaml.tmp" "$MACOS_DIR/config.yaml"
+# Clear default binary_path
+sed 's|binary_path:.*|binary_path: ""|' "$MACOS_DIR/config.yaml" > "$MACOS_DIR/config.yaml.tmp" && mv "$MACOS_DIR/config.yaml.tmp" "$MACOS_DIR/config.yaml"
+# Set specific paths
+sed 's|onnx_binary_path:.*|onnx_binary_path: "./bin/upscale-onnx/upscale-onnx"|' "$MACOS_DIR/config.yaml" > "$MACOS_DIR/config.yaml.tmp" && mv "$MACOS_DIR/config.yaml.tmp" "$MACOS_DIR/config.yaml"
+sed 's|ncnn_binary_path:.*|ncnn_binary_path: "./bin/realesrgan-ncnn-vulkan"|' "$MACOS_DIR/config.yaml" > "$MACOS_DIR/config.yaml.tmp" && mv "$MACOS_DIR/config.yaml.tmp" "$MACOS_DIR/config.yaml"
 sed 's|models_path:.*|models_path: "./models"|' "$MACOS_DIR/config.yaml" > "$MACOS_DIR/config.yaml.tmp" && mv "$MACOS_DIR/config.yaml.tmp" "$MACOS_DIR/config.yaml"
 
 # ---------------------------------------------------------

@@ -34,9 +34,11 @@ type ServerConfig struct {
 
 // UpscalerConfig holds the settings for the upscaling engine.
 type UpscalerConfig struct {
-    BinaryPath   string `yaml:"binary_path"`
-    ModelsPath   string `yaml:"models_path"`
-    DefaultModel string `yaml:"default_model"`
+	BinaryPath     string `yaml:"binary_path"`
+	OnnxBinaryPath string `yaml:"onnx_binary_path"`
+	NcnnBinaryPath string `yaml:"ncnn_binary_path"`
+	ModelsPath     string `yaml:"models_path"`
+	DefaultModel   string `yaml:"default_model"`
     DefaultScale int    `yaml:"default_scale"`
     Threads      string `yaml:"threads"`
     EnableGPU    bool   `yaml:"enable_gpu"`

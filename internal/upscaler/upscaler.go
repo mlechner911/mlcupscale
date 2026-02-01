@@ -23,11 +23,13 @@ import (
 
 // Config holds the configuration settings for the upscaler service.
 type Config struct {
-    BinaryPath   string
-    ModelsPath   string
-    DefaultModel string
-    DefaultScale int
-    Threads      string
+	BinaryPath     string
+	OnnxBinaryPath string
+	NcnnBinaryPath string
+	ModelsPath     string
+	DefaultModel   string
+	DefaultScale   int
+	Threads        string
     EnableGPU    bool
     GPUID        int
 }
@@ -286,10 +288,38 @@ func (s *Service) Upscale(ctx context.Context, req Request, onProgress func(int)
         return nil, fmt.Errorf("failed to get input size: %w", err)
     }
 
-    // Build command
-    args := s.buildArgs(req)
+    // Determine Engine and Binary
+    var binaryPath string
+    var isOnnx bool
 
-    cmd := exec.CommandContext(ctx, s.config.BinaryPath, args...)
+    // Check for ONNX model first
+    onnxPath := filepath.Join(s.config.ModelsPath, req.ModelName+".onnx")
+    if _, err := os.Stat(onnxPath); err == nil {
+        isOnnx = true
+        // Prefer specific ONNX binary, fallback to general binary path
+        if s.config.OnnxBinaryPath != "" {
+            binaryPath = s.config.OnnxBinaryPath
+        } else {
+            binaryPath = s.config.BinaryPath
+        }
+    } else {
+        // Assume NCNN
+        isOnnx = false
+        if s.config.NcnnBinaryPath != "" {
+            binaryPath = s.config.NcnnBinaryPath
+        } else {
+            binaryPath = s.config.BinaryPath
+        }
+    }
+
+    if binaryPath == "" {
+        return nil, fmt.Errorf("appropriate upscaler binary not configured for model type (onnx=%v)", isOnnx)
+    }
+
+    // Build command
+    args := s.buildArgs(req, isOnnx)
+
+    cmd := exec.CommandContext(ctx, binaryPath, args...)
 
     // Capture stderr for progress
     stderr, err := cmd.StderrPipe()
@@ -360,37 +390,44 @@ func (s *Service) Upscale(ctx context.Context, req Request, onProgress func(int)
 
 // validate checks if the request parameters and required files are valid.
 func (s *Service) validate(req Request) error {
-    if _, err := os.Stat(s.config.BinaryPath); os.IsNotExist(err) {
-        return fmt.Errorf("upscaler binary not found: %s", s.config.BinaryPath)
-    }
+	// We no longer strictly check s.config.BinaryPath here because it might vary per model
+	// But we should check that at least one binary is configured.
+	if s.config.BinaryPath == "" && s.config.OnnxBinaryPath == "" && s.config.NcnnBinaryPath == "" {
+		return fmt.Errorf("no upscaler binary configured")
+	}
 
-    if _, err := os.Stat(req.InputPath); os.IsNotExist(err) {
-        return fmt.Errorf("input file not found: %s", req.InputPath)
-    }
+	if _, err := os.Stat(req.InputPath); os.IsNotExist(err) {
+		return fmt.Errorf("input file not found: %s", req.InputPath)
+	}
 
-    if req.Scale < 2 || req.Scale > 4 {
-        return fmt.Errorf("invalid scale: %d (must be 2, 3, or 4)", req.Scale)
-    }
+	if req.Scale < 2 || req.Scale > 4 {
+		return fmt.Errorf("invalid scale: %d (must be 2, 3, or 4)", req.Scale)
+	}
 
-    modelPath := filepath.Join(s.config.ModelsPath, req.ModelName)
-    // Check if ONNX
-    if _, err := os.Stat(modelPath + ".onnx"); err == nil {
-        return nil
-    }
-    // Check if standard NCNN
-    if _, err := os.Stat(modelPath); os.IsNotExist(err) {
-        // Try with .param and .bin extensions if directory check fails
-        // RealESRGAN models usually come as .param and .bin files with the same name
-        if _, err := os.Stat(modelPath + ".param"); os.IsNotExist(err) {
-             return fmt.Errorf("model not found: %s", req.ModelName)
-        }
-    }
+	modelPath := filepath.Join(s.config.ModelsPath, req.ModelName)
+	// Check if ONNX
+	hasOnnx := false
+	if _, err := os.Stat(modelPath + ".onnx"); err == nil {
+		hasOnnx = true
+	}
 
-    return nil
+	// Check if standard NCNN
+	hasNcnn := false
+	if _, err := os.Stat(modelPath); err == nil {
+		hasNcnn = true
+	} else if _, err := os.Stat(modelPath + ".param"); err == nil {
+		hasNcnn = true
+	}
+
+	if !hasOnnx && !hasNcnn {
+		return fmt.Errorf("model not found: %s", req.ModelName)
+	}
+
+	return nil
 }
 
-	// buildArgs constructs the command-line arguments for the upscaler binary.
-func (s *Service) buildArgs(req Request) []string {
+// buildArgs constructs the command-line arguments for the upscaler binary.
+func (s *Service) buildArgs(req Request, isOnnx bool) []string {
 	args := []string{
 		"-i", req.InputPath,
 		"-o", req.OutputPath,
@@ -398,11 +435,18 @@ func (s *Service) buildArgs(req Request) []string {
 		"-m", s.config.ModelsPath,
 		"-n", req.ModelName,
 		"-j", s.config.Threads,
-		"-t", "512", // Force tiling to prevent CoreML memory issues
 	}
-	// Note: We've hardcoded -t 512 above to fix 16k upscale issues.
-	// If the user supplied a custom TileSize in req, we could override it here,
-	// but for now, we force 512 for stability.
+
+	if isOnnx {
+		// ONNX implementation needs -t 512 for stability
+		args = append(args, "-t", "512")
+	} else {
+		// NCNN implementation might not need it, or supports it differently
+		// But for now, we only forced it for ONNX/CoreML stability.
+		// If we want consistency, we can add it here too if the binary supports it.
+		// The standard realesrgan-ncnn-vulkan DOES support -t.
+		args = append(args, "-t", "512")
+	}
 
 	if !s.config.EnableGPU {
 		args = append(args, "-g", "-1")
@@ -449,14 +493,17 @@ func (s *Service) GetAvailableModels() ([]ModelInfo, error) {
         name := entry.Name()
         modelName := name
 
-        // If file, strip extension to get model name
-        if !entry.IsDir() {
-            ext := filepath.Ext(name)
-            if ext == ".param" || ext == ".bin" || ext == ".onnx" {
-                modelName = name[0 : len(name)-len(ext)]
-            } else {
-                continue
-            }
+        // Check extensions
+        if strings.HasSuffix(name, ".onnx") {
+            modelName = strings.TrimSuffix(name, ".onnx")
+        } else if strings.HasSuffix(name, ".param") {
+            modelName = strings.TrimSuffix(name, ".param")
+        } else if strings.HasSuffix(name, ".bin") {
+             continue // skip bin, we count the param
+        } else if entry.IsDir() {
+             // Directories are often models too
+        } else {
+             continue
         }
 
         if seen[modelName] {

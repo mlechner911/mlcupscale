@@ -53,13 +53,15 @@ func main() {
 
     // Initialize services
     upscalerService := upscaler.NewService(upscaler.Config{
-        BinaryPath:   cfg.Upscaler.BinaryPath,
-        ModelsPath:   cfg.Upscaler.ModelsPath,
-        DefaultModel: cfg.Upscaler.DefaultModel,
-        DefaultScale: cfg.Upscaler.DefaultScale,
-        Threads:      cfg.Upscaler.Threads,
-        EnableGPU:    cfg.Upscaler.EnableGPU,
-        GPUID:        cfg.Upscaler.GPUID,
+        BinaryPath:     cfg.Upscaler.BinaryPath,
+        OnnxBinaryPath: cfg.Upscaler.OnnxBinaryPath,
+        NcnnBinaryPath: cfg.Upscaler.NcnnBinaryPath,
+        ModelsPath:     cfg.Upscaler.ModelsPath,
+        DefaultModel:   cfg.Upscaler.DefaultModel,
+        DefaultScale:   cfg.Upscaler.DefaultScale,
+        Threads:        cfg.Upscaler.Threads,
+        EnableGPU:      cfg.Upscaler.EnableGPU,
+        GPUID:          cfg.Upscaler.GPUID,
     })
 
     // Start workers

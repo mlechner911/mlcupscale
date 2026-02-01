@@ -9,6 +9,8 @@ server:
 
 upscaler:
   binary_path: "./scripts/upscale-onnx.sh"
+  onnx_binary_path: ""  # Optional: specific path for ONNX engine
+  ncnn_binary_path: ""  # Optional: specific path for NCNN engine
   models_path: "./models"
   default_model: "realesrgan-x4plus"
   default_scale: 4
