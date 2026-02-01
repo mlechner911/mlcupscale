@@ -446,7 +446,7 @@ func (s *Service) GetAvailableModels() ([]ModelInfo, error) {
         // If file, strip extension to get model name
         if !entry.IsDir() {
             ext := filepath.Ext(name)
-            if ext == ".param" || ext == ".bin" {
+            if ext == ".param" || ext == ".bin" || ext == ".onnx" {
                 modelName = name[0 : len(name)-len(ext)]
             } else {
                 continue
