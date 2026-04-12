@@ -8,7 +8,7 @@ platforms: [Linux, macOS]
 github: ""
 openapi: "openapi.yaml"
 screenshots:
-  - ""
+  - "upscale_compare.png"
 slogan_en: "High-performance REST API for AI-based image upscaling of massive files."
 slogan_de: "Hochleistungs-REST-API für KI-basiertes Image-Upscaling von riesigen Dateien."
 
