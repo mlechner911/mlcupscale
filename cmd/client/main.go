@@ -34,7 +34,7 @@ func NewClient(serverURL string) *Client {
     }
 }
 
-// Upscale sends an image to the server for upscaling and downloads the result to the specified output path.
+// Upscale sends an image to the server for upscaling and waits for completion by polling the status.
 func (c *Client) Upscale(inputPath, outputPath string, scale int, model string) error {
     file, err := os.Open(inputPath)
     if err != nil {
@@ -79,23 +79,61 @@ func (c *Client) Upscale(inputPath, outputPath string, scale int, model string) 
         return fmt.Errorf("upscale failed: unknown error")
     }
 
-    if duration, ok := result["duration_seconds"].(float64); ok {
-        fmt.Printf("Duration: %.2fs\n", duration)
-    }
-    if input, ok := result["input_size"]; ok {
-         fmt.Printf("Input: %v\n", input)
-    }
-    if output, ok := result["output_size"]; ok {
-         fmt.Printf("Output: %v\n", output)
-    }
-
-    downloadPath, ok := result["download_url"].(string)
+    jobID, ok := result["job_id"].(string)
     if !ok {
-        return fmt.Errorf("response missing download_url")
+        return fmt.Errorf("response missing job_id")
     }
 
-    downloadURL := c.serverURL + downloadPath
-    return c.download(downloadURL, outputPath)
+    fmt.Printf("Job submitted: %s. Processing...\n", jobID)
+
+    // Polling loop
+    ticker := time.NewTicker(2 * time.Second)
+    defer ticker.Stop()
+    timeout := time.After(15 * time.Minute)
+
+    for {
+        select {
+        case <-timeout:
+            return fmt.Errorf("timeout waiting for job completion")
+        case <-ticker.C:
+            statusResp, err := c.httpClient.Get(c.serverURL + "/api/v1/status/" + jobID)
+            if err != nil {
+                return fmt.Errorf("failed to check status: %w", err)
+            }
+
+            var status map[string]interface{}
+            if err := json.NewDecoder(statusResp.Body).Decode(&status); err != nil {
+                statusResp.Body.Close()
+                return fmt.Errorf("failed to parse status response: %w", err)
+            }
+            statusResp.Body.Close()
+
+            currentStatus, _ := status["status"].(string)
+            progress, _ := status["progress"].(float64)
+
+            fmt.Printf("\rStatus: %-12s (%3d%%)      ", currentStatus, int(progress))
+
+            if currentStatus == "completed" {
+                fmt.Println("\nUpscaling finished.")
+                downloadPath, ok := status["download_url"].(string)
+                if !ok {
+                    return fmt.Errorf("status response missing download_url")
+                }
+                if duration, ok := status["duration_seconds"].(float64); ok {
+                    fmt.Printf("Duration: %.2fs\n", duration)
+                }
+                return c.download(c.serverURL+downloadPath, outputPath)
+            }
+
+            if currentStatus == "failed" {
+                fmt.Println("\nUpscaling failed.")
+                if msg, ok := status["error"].(string); ok {
+                    return fmt.Errorf("server error: %s", msg)
+                }
+                return fmt.Errorf("unknown server error")
+            }
+        }
+    }
 }
 
 // download is a helper method to download a file from a URL to a local path.
@@ -139,7 +177,7 @@ func (c *Client) ListModels() ([]interface{}, error) {
 // main is the entry point for the CLI client.
 // It parses command-line arguments and executes the requested action.
 func main() {
-    serverURL := flag.String("server", "http://localhost:8080", "Server URL")
+    serverURL := flag.String("server", "http://localhost:8089", "Server URL")
     inputFile := flag.String("input", "", "Input image file")
     outputFile := flag.String("output", "upscaled.png", "Output image file")
     scale := flag.Int("scale", 4, "Scale factor")

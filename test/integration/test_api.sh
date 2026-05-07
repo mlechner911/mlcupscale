@@ -3,7 +3,8 @@ set -e
 
 BASE_URL="http://localhost:8089/api/v1"
 TEST_IMAGE="test/testdata/sample_images/test.png"
-OUTPUT_IMAGE="test_output.png"
+OUTPUT_DIR="test/results"
+OUTPUT_IMAGE="$OUTPUT_DIR/test_output.png"
 
 # Colors
 GREEN='\033[0;32m'
@@ -19,6 +20,9 @@ fail() {
     exit 1
 }
 
+# Ensure directories
+mkdir -p "$OUTPUT_DIR"
+
 # Ensure dependencies
 command -v curl >/dev/null 2>&1 || fail "curl is required"
 command -v jq >/dev/null 2>&1 || fail "jq is required"
@@ -31,8 +35,8 @@ VERSION=$(curl -s "$BASE_URL/health" | jq -r .version)
 if [ "$HEALTH_STATUS" != "ok" ]; then
     fail "Health check failed: status=$HEALTH_STATUS"
 fi
-if [ "$VERSION" != "1.0.0" ]; then
-    fail "Version check failed: version=$VERSION"
+if [ "$VERSION" != "1.0.4" ]; then
+    fail "Version check failed: version=$VERSION (expected 1.0.4)"
 fi
 log "Health check passed (v$VERSION)"
 

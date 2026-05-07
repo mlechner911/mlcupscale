@@ -202,7 +202,7 @@ Health-Check
 ```json
 {
   "status": "ok",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "uptime_seconds": 12345,
   "models_loaded": 3
 }
@@ -1050,7 +1050,7 @@ func (h *Handler) HandleModels(c *gin.Context) {
 func (h *Handler) HandleHealth(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{
         "status":  "ok",
-        "version": "1.0.0",
+        "version": "1.0.3",
         "time":    time.Now().Unix(),
     })
 }
@@ -1079,7 +1079,7 @@ import (
 
 var (
     configPath = flag.String("config", "config/config.yaml", "Path to config file")
-    version    = "1.0.0"
+    version    = "1.0.3"
 )
 
 func main() {
@@ -1365,7 +1365,7 @@ set -e
 
 echo "=== Building Upscale Service ==="
 
-VERSION=${1:-"1.0.0"}
+VERSION=${1:-"1.0.3"}
 BUILD_DIR="build"
 DIST_DIR="dist/upscale-service-$VERSION"
 
@@ -1951,16 +1951,16 @@ curl http://localhost:8080/api/v1/health
 
 ```bash
 # 1. Build production image
-docker build -t upscale-service:1.0.0 -f deployments/docker/Dockerfile .
+docker build -t upscale-service:1.0.3 -f deployments/docker/Dockerfile .
 
 # 2. Tag for registry
-docker tag upscale-service:1.0.0 registry.example.com/upscale-service:1.0.0
+docker tag upscale-service:1.0.3 registry.example.com/upscale-service:1.0.3
 
 # 3. Push to registry
-docker push registry.example.com/upscale-service:1.0.0
+docker push registry.example.com/upscale-service:1.0.3
 
 # 4. Deploy to production
-docker pull registry.example.com/upscale-service:1.0.0
+docker pull registry.example.com/upscale-service:1.0.3
 docker run -d \
   --name upscale-service \
   -p 8080:8080 \
@@ -1968,7 +1968,7 @@ docker run -d \
   -v /data/uploads:/app/data/uploads \
   -v /data/outputs:/app/data/outputs \
   --restart unless-stopped \
-  registry.example.com/upscale-service:1.0.0
+  registry.example.com/upscale-service:1.0.3
 ```
 
 ### Native Installation (Linux)
@@ -2097,7 +2097,7 @@ clean:
 - [ ] API documentation
 - [ ] Deployment guides
 - [ ] CI/CD pipeline
-- [ ] Release v1.0.0
+- [ ] Release v1.0.3
 
 ---
 

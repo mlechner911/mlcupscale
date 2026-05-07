@@ -1,0 +1,48 @@
+server:
+  host: "127.0.0.1"
+  port: 8089
+  api_prefix: "/api/v1"
+  auth_token: ""
+  read_timeout_seconds: 300
+  write_timeout_seconds: 300
+  max_request_size_mb: 100
+
+upscaler:
+  # On Windows we use the NCNN engine by default
+  binary_path: "realesrgan-ncnn-vulkan.exe"
+  onnx_binary_path: ""
+  ncnn_binary_path: "realesrgan-ncnn-vulkan.exe"
+  models_path: "./models"
+  default_model: "realesrgan-x4plus"
+  default_scale: 4
+  threads: "2:2:2"
+  enable_gpu: true
+  gpu_id: -1
+
+storage:
+  upload_dir: "./data/uploads"
+  output_dir: "./data/outputs"
+  max_file_size_mb: 100
+  cleanup_after_hours: 24
+  retention_policy: "delete_after_download"
+
+limits:
+  max_concurrent_jobs: 1
+  max_queue_size: 20
+  rate_limit_per_minute: 10
+
+logging:
+  level: "info"
+  format: "text"
+  output: "both"
+  file_path: "./logs/server.log"
+
+features:
+  async_processing: true
+  job_queue: true
+  metrics: true
+  cors_enabled: true
+  enable_swagger: true
+  enable_web_ui: true
+  allowed_origins:
+    - "*"

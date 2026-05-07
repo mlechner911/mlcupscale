@@ -1,0 +1,124 @@
+name: Build CLI Binaries
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-engine-linux:
+    name: Build Engine (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan-dev libwebp-dev glslang-dev
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
+      - name: Build Engine
+        run: task build-engine-linux
+
+      - name: Upload Linux Engine
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-linux
+          path: bin/realesrgan-ncnn-vulkan
+
+  build-engine-windows:
+    name: Build Engine (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.204.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
+      - name: Build Engine
+        run: task build-engine-windows
+
+      - name: Upload Windows Engine
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-windows
+          path: bin/realesrgan-ncnn-vulkan.exe
+
+  build-cli:
+    name: Build Multi-Platform CLI
+    needs: [build-engine-linux, build-engine-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: true
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+
+      - name: Download Built Engines
+        uses: actions/download-artifact@v4
+        with:
+          path: bin/
+          merge-multiple: true
+
+      - name: Download macOS Engine & Models
+        run: |
+          # We still download the macOS binary for now
+          task binaries
+          task models
+
+      - name: Build Standalone CLI
+        run: task build-cli
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlcupscale-cli-binaries
+          path: |
+            build/mlcupscale-cli-linux
+            build/mlcupscale-cli-windows.exe
+            build/mlcupscale-cli-macos-amd64
+            build/mlcupscale-cli-macos-arm64
+          if-no-files-found: error
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/mlcupscale-cli-linux
+            build/mlcupscale-cli-windows.exe
+            build/mlcupscale-cli-macos-amd64
+            build/mlcupscale-cli-macos-arm64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

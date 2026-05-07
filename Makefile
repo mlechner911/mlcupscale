@@ -1,7 +1,7 @@
 # Image Upscale Service
 # Wrapper around Taskfile.yml - Please use 'task' directly if possible.
 
-.PHONY: help build build-server build-client clean run models docker-build docker-run docker-stop docker-logs test test-integration
+.PHONY: help build build-server build-client clean run models docker-build docker-run docker-stop docker-logs test test-integration build-windows build-windows-installer binaries
 
 # Default target
 help:
@@ -16,6 +16,18 @@ build-server:
 
 build-client:
 @task build-client
+
+build-windows:
+@task build-windows
+
+build-windows-installer:
+@task build-windows-installer
+
+binaries:
+@task binaries
+
+dropzone:
+@task dropzone
 
 clean:
 @task clean

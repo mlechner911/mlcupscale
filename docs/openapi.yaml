@@ -7,7 +7,7 @@ info:
     This service allows you to upload images and upscale them by 2x, 3x,
      or 4x using various optimized models.
      Note: I have good results with 2x and 3x, but not with 4x on certain images.
-  version: 1.0.0
+  version: 1.0.4
   contact:
     name: Michael Lechner
   license:
@@ -15,7 +15,7 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: .
+  - url: /api/v1
     description: Current Server
 
 security:
@@ -23,6 +23,38 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  /v1/models:
+    get:
+      summary: List models (OpenAI compatible)
+      description: Get a list of available models in the standard OpenAI format.
+      operationId: listOpenAIModels
+      responses:
+        '200':
+          description: OpenAI compatible model list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: list
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                          example: model
+                        created:
+                          type: integer
+                        owned_by:
+                          type: string
+                          example: mlcupscale
+
   /upscale:
     post:
       summary: Upscale an image
@@ -220,7 +252,7 @@ paths:
                 properties:
                   version:
                     type: string
-                    example: "1.0.0"
+                    example: "1.0.4"
                   models:
                     type: array
                     items:
@@ -244,7 +276,7 @@ paths:
                     example: ok
                   version:
                     type: string
-                    example: 1.0.0
+                    example: 1.0.4
                   time:
                     type: integer
                     format: int64

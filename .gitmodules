@@ -4,3 +4,6 @@
 [submodule "mlcprodweb"]
 	path = mlcprodweb
 	url = mlc@nas.local:/volume1/homes/mlc/repositories/product/mlcupscale.git
+[submodule "third_party/realesrgan-ncnn-vulkan"]
+	path = third_party/realesrgan-ncnn-vulkan
+	url = https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan.git

@@ -79,7 +79,7 @@ You can verify the service is running by checking the health endpoint:
 
 ```bash
 curl http://localhost:8089/api/v1/health
-# Output: {"status":"ok","version":"1.0.0",...}
+# Output: {"status":"ok","version":"1.0.3",...}
 ```
 
 Or run the automated integration tests:

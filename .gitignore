@@ -5,12 +5,31 @@
 *.dll
 *.so
 *.dylib
+/main
+
+# Go
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+.pytest_cache/
+.mypy_cache/
 
 # Models (downloaded via script)
 /models/*
 !/models/.keep
 
-# Data (except keepfiles if any, but usually we ignore contents)
+# CLI Embedded Assets (copied during build)
+/cmd/upscale-cli/assets/bin/*
+!/cmd/upscale-cli/assets/bin/.keep
+/cmd/upscale-cli/assets/models/*
+!/cmd/upscale-cli/assets/models/.keep
+
+# Data (uploads/outputs handled via keepfiles)
 /data/uploads/*
 !/data/uploads/.keep
 /data/outputs/*
@@ -29,23 +48,31 @@ Thumbs.db
 # Logs
 /logs/
 *.log
+server_log.txt
 
-# Temp
+# Temp / Generated
 /tmp/
-test/upscaled.png
-test_output.png
-test/testdata/sample_images/*
-!test/testdata/sample_images/.keep
-test/results/*
-test/testdata/generated/*
+/dist/
+.task/
 
-# Root level binaries and temp images
-/main
+# Test Outputs & Generated Data
+/test/results/*
+!/test/results/.keep
+/test/testdata/generated/*
+!/test/testdata/generated/.keep
+/test/testdata/sample_images/*
+!/test/testdata/sample_images/.keep
+# Specific legacy/temporary test files at root
+test_output.png
+test_upscaled.png
+*.upscaled.png
+*.upscaled.jpg
+*.upscaled.webp
+
+# Root level images (usually accidental test output)
 /*.webp
 /*.png
 /*.jpg
 /*.json
-
-.task/
-dist/
-server_log.txt
+/*.jpeg
+/*.onnx

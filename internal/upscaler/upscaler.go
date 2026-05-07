@@ -18,6 +18,8 @@ import (
 	"sync"
 	"time"
 
+	"upscale-service/internal/osutil"
+
 	_ "golang.org/x/image/webp"
 )
 
@@ -319,7 +321,7 @@ func (s *Service) Upscale(ctx context.Context, req Request, onProgress func(int)
     // Build command
     args := s.buildArgs(req, isOnnx)
 
-    cmd := exec.CommandContext(ctx, binaryPath, args...)
+    cmd := osutil.PrepareCommand(exec.CommandContext(ctx, binaryPath, args...))
 
     // Capture stderr for progress
     stderr, err := cmd.StderrPipe()

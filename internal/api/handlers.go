@@ -172,7 +172,7 @@ func (h *Handler) HandleDownload(c *gin.Context) {
     }
 
     // Ensure the file exists
-    if _, err := http.Dir(filepath.Dir(job.Result.OutputPath)).Open(filepath.Base(job.Result.OutputPath)); err != nil {
+    if _, err := os.Stat(job.Result.OutputPath); os.IsNotExist(err) {
          c.JSON(http.StatusNotFound, gin.H{"error": "output file missing"})
          return
     }
@@ -202,15 +202,27 @@ func (h *Handler) HandleDownload(c *gin.Context) {
     }
 
     _, _ = io.Copy(c.Writer, f)
+    f.Close() // Explicitly close before we might delete it
 
     // Delete after download if policy dictates
     if h.storage.ShouldDeleteAfterDownload() {
-        // We run this in a goroutine to not block the response,
-        // but we need to wait a tiny bit to ensure the file server has opened the file handle
+        // We run this in a goroutine to not block the response
         go func() {
-            time.Sleep(1 * time.Second) // Small buffer
-            if err := h.storage.DeleteFile(job.Result.OutputPath); err != nil {
-                fmt.Printf("Failed to delete file after download: %v\n", err)
+            outputPath := job.Result.OutputPath
+            // Retry loop for Windows where files might be transiently locked
+            for i := 0; i < 5; i++ {
+                time.Sleep(time.Duration(i+1) * 200 * time.Millisecond)
+                err := h.storage.DeleteFile(outputPath)
+                if err == nil {
+                    return
+                }
+                // If it's not a "file not found" error, it might be a lock
+                if os.IsNotExist(err) {
+                    return
+                }
+                if i == 4 {
+                    fmt.Printf("Failed to delete file after %d attempts: %v\n", i+1, err)
+                }
             }
         }()
     }
@@ -300,6 +312,41 @@ func (h *Handler) HandleModels(c *gin.Context) {
         "version": version.Version,
         "models":  models,
     })
+}
+
+// HandleOpenAIModels returns a list of available AI models in OpenAI-compatible format.
+func (h *Handler) HandleOpenAIModels(c *gin.Context) {
+	models, err := h.upscaler.GetAvailableModels()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("failed to list models: %v", err),
+		})
+		return
+	}
+
+	type OpenAIModel struct {
+		ID      string `json:"id"`
+		Object  string `json:"object"`
+		Created int64  `json:"created"`
+		OwnedBy string `json:"owned_by"`
+	}
+
+	data := make([]OpenAIModel, 0, len(models))
+	now := time.Now().Unix()
+
+	for _, m := range models {
+		data = append(data, OpenAIModel{
+			ID:      m.Name,
+			Object:  "model",
+			Created: now,
+			OwnedBy: "mlcupscale",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"object": "list",
+		"data":   data,
+	})
 }
 
 // HandleHealth provides a health check endpoint returning status, version, and server time.

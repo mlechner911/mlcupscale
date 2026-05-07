@@ -134,7 +134,7 @@ Returns a list of installed Real-ESRGAN models.
 **Response:**
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.0.3",
   "models": [
     {
       "name": "realesrgan-x4plus",
@@ -161,7 +161,7 @@ Returns service status and version. Useful for readiness probes.
 ```json
 {
   "status": "ok",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "time": 1709223344
 }
 ```

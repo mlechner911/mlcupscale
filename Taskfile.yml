@@ -44,6 +44,104 @@ tasks:
     generates:
       - '{{.BUILD_DIR}}/upscale-client'
 
+  build-cli:
+    desc: Build the standalone single-executable CLI for all platforms
+    deps: [binaries, models, prepare-cli-assets]
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - echo "Building Linux CLI..."
+      - GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o {{.BUILD_DIR}}/mlcupscale-cli-linux ./cmd/upscale-cli
+      - echo "Building Windows CLI..."
+      - GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o {{.BUILD_DIR}}/mlcupscale-cli-windows.exe ./cmd/upscale-cli
+      - echo "Building macOS CLI (Universal)..."
+      - GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o {{.BUILD_DIR}}/mlcupscale-cli-macos-amd64 ./cmd/upscale-cli
+      - GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o {{.BUILD_DIR}}/mlcupscale-cli-macos-arm64 ./cmd/upscale-cli
+    sources:
+      - cmd/upscale-cli/**/*
+      - internal/upscaler/**/*
+    generates:
+      - '{{.BUILD_DIR}}/mlcupscale-cli-linux'
+      - '{{.BUILD_DIR}}/mlcupscale-cli-windows.exe'
+      - '{{.BUILD_DIR}}/mlcupscale-cli-macos-amd64'
+      - '{{.BUILD_DIR}}/mlcupscale-cli-macos-arm64'
+
+  prepare-cli-assets:
+    desc: Copy required binaries and models to the CLI assets directory for embedding
+    cmds:
+      - mkdir -p cmd/upscale-cli/assets/bin
+      - mkdir -p cmd/upscale-cli/assets/models
+      - cp bin/realesrgan-ncnn-vulkan cmd/upscale-cli/assets/bin/
+      - cp bin/realesrgan-ncnn-vulkan-macos cmd/upscale-cli/assets/bin/
+      - cp bin/realesrgan-ncnn-vulkan.exe cmd/upscale-cli/assets/bin/
+      - cp models/realesrgan-x4plus.bin cmd/upscale-cli/assets/models/
+      - cp models/realesrgan-x4plus.param cmd/upscale-cli/assets/models/
+    status:
+      - test -f cmd/upscale-cli/assets/bin/realesrgan-ncnn-vulkan
+      - test -f cmd/upscale-cli/assets/bin/realesrgan-ncnn-vulkan-macos
+      - test -f cmd/upscale-cli/assets/bin/realesrgan-ncnn-vulkan.exe
+      - test -f cmd/upscale-cli/assets/models/realesrgan-x4plus.bin
+      - test -f cmd/upscale-cli/assets/models/realesrgan-x4plus.param
+
+  build-windows:
+    desc: Cross-compile for Windows (amd64)
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -X upscale-service/internal/version.Version={{.VERSION}}" -o {{.BUILD_DIR}}/upscale-server-windows-amd64.exe ./cmd/server
+      - GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -X upscale-service/internal/version.Version={{.VERSION}}" -o {{.BUILD_DIR}}/upscale-client-windows-amd64.exe ./cmd/client
+      - task: build-tray
+    sources:
+      - cmd/server/**/*.go
+      - cmd/client/**/*.go
+      - internal/**/*.go
+
+  build-tray:
+    desc: Build Windows system tray application
+    dir: cmd/tray
+    cmds:
+      # Use rsrc to embed icon if tool is available, otherwise just build
+      - |
+        if command -v rsrc >/dev/null 2>&1; then
+          rsrc -arch amd64 -ico icon.ico -o syso_windows.syso
+        fi
+        GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H windowsgui" -o ../../{{.BUILD_DIR}}/upscale-tray-windows-amd64.exe .
+    sources:
+      - main.go
+      - icon.ico
+    generates:
+      - ../../{{.BUILD_DIR}}/upscale-tray-windows-amd64.exe
+
+  build-windows-installer:
+    desc: Build Windows NSIS installer
+    deps: [build-windows, binaries]
+    cmds:
+      - makensis -V3 -DAPP_VERSION={{.VERSION}} deployments/windows/installer.nsi
+
+  binaries:
+    desc: Download or build upscaler binaries for all platforms
+    cmds:
+      - chmod +x scripts/download-binaries.sh
+      - ./scripts/download-binaries.sh
+
+  build-engine-linux:
+    desc: Build the C++ upscaler engine from source (Linux)
+    dir: third_party/realesrgan-ncnn-vulkan
+    cmds:
+      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF .
+      - cmake --build build -j 4
+      - mkdir -p ../../bin
+      - cp build/realesrgan-ncnn-vulkan ../../bin/realesrgan-ncnn-vulkan
+    status:
+      - test -f ../../bin/realesrgan-ncnn-vulkan
+
+  build-engine-windows:
+    desc: Build the C++ upscaler engine from source (Windows)
+    dir: third_party/realesrgan-ncnn-vulkan
+    cmds:
+      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF .
+      - cmake --build build --config Release -j 4
+      - mkdir -p ../../bin
+      - copy build\Release\realesrgan-ncnn-vulkan.exe ..\..\bin\realesrgan-ncnn-vulkan.exe
+
   run:
     desc: Run the server locally
     deps: [build-server]
@@ -51,11 +149,18 @@ tasks:
       - ./{{.BUILD_DIR}}/upscale-server
 
   clean:
-    desc: Remove build artifacts and temporary files
+    desc: Remove build artifacts, temporary files, and generated test data
     cmds:
       - rm -rf {{.BUILD_DIR}}
+      - rm -rf bin/ dist/
+      - rm -rf tmp/
+      - rm -f *.log server_log.txt
+      - find test/results -type f ! -name '.keep' -delete
+      - find test/testdata/generated -type f ! -name '.keep' -delete
       - rm -f test_upscaled.png test_output.png
-      - rm -rf test/testdata/sample_images/test.png
+      - find data/uploads -type f ! -name '.keep' -delete
+      - find data/outputs -type f ! -name '.keep' -delete
+      - find . -maxdepth 1 -name "*.png" -o -name "*.jpg" -o -name "*.webp" -delete
 
   models:
     desc: Download the Real-ESRGAN models
@@ -139,6 +244,61 @@ tasks:
     generates:
       - '{{.MAC_SRC}}/../mlcupscale_build/MLCupscale.dmg'
 
+  fetch-macos-app:
+    desc: Fetch the built macOS DMG back to local build directory
+    vars:
+      MAC_SRC: "~/mlcupscale_src"
+    cmds:
+      - mkdir -p {{.BUILD_DIR}}
+      - scp {{.MAC_HOST}}:{{.MAC_SRC}}/../mlcupscale_build/MLCupscale.dmg {{.BUILD_DIR}}/mlcupscale-{{.VERSION}}.dmg
+
+  dropzone:
+    desc: Copy all build artifacts to /mnt/data2tb/dropzone
+    vars:
+      DROPZONE: /mnt/data2tb/dropzone
+    cmds:
+      - mkdir -p {{.DROPZONE}}
+      - |
+        echo "Copying artifacts to {{.DROPZONE}}..."
+        # Windows Setup (Search for any version in build dir)
+        WINST=$(ls {{.BUILD_DIR}}/mlcupscale-*-setup.exe 2>/dev/null | head -1)
+        if [ -n "$WINST" ]; then
+          cp "$WINST" "{{.DROPZONE}}/"
+          echo "  ✓ $(basename $WINST)"
+        fi
+        # macOS DMG (Search for any version)
+        MACDMG=$(ls {{.BUILD_DIR}}/mlcupscale-*.dmg 2>/dev/null | head -1)
+        if [ -n "$MACDMG" ]; then
+          cp "$MACDMG" "{{.DROPZONE}}/"
+          echo "  ✓ $(basename $MACDMG)"
+        fi
+        # Linux binaries (Standard names)
+        if [ -f "{{.BUILD_DIR}}/upscale-server" ]; then
+          cp "{{.BUILD_DIR}}/upscale-server" "{{.DROPZONE}}/upscale-server-linux"
+          echo "  ✓ upscale-server-linux"
+        fi
+        if [ -f "{{.BUILD_DIR}}/upscale-client" ]; then
+          cp "{{.BUILD_DIR}}/upscale-client" "{{.DROPZONE}}/upscale-client-linux"
+          echo "  ✓ upscale-client-linux"
+        fi
+    silent: true
+
+  dropzone:cli:
+    desc: Copy the Windows standalone CLI to /mnt/data2tb/dropzone
+    vars:
+      DROPZONE: /mnt/data2tb/dropzone
+    cmds:
+      - mkdir -p {{.DROPZONE}}
+      - |
+        if [ -f "{{.BUILD_DIR}}/mlcupscale-cli-windows.exe" ]; then
+          cp "{{.BUILD_DIR}}/mlcupscale-cli-windows.exe" "{{.DROPZONE}}/"
+          echo "✓ Copied mlcupscale-cli-windows.exe to {{.DROPZONE}}"
+        else
+          echo "Error: mlcupscale-cli-windows.exe not found in {{.BUILD_DIR}}. Run 'task build-cli' first."
+          exit 1
+        fi
+    silent: true
+
   sync-macos:
     desc: Sync code to Mac without building
     vars:
@@ -190,6 +350,16 @@ tasks:
       - task: test-macos-health
       - task: test-macos-upscale
 
+  macos:run-release:
+    desc: Restart the released macOS app on the remote host and tail logs
+    cmds:
+      - task: stop-macos-app
+      - cmd: sleep 2
+      - task: start-macos-app
+      - echo "Waiting for service startup..."
+      - cmd: sleep 5
+      - task: get-macos-logs
+
   # ============================================================================
   # MACOS LOCAL (PYTHON)
   # ============================================================================
@@ -209,4 +379,3 @@ tasks:
       # Ensure executable permission for the wrapper script
       - chmod +x scripts/upscale-onnx.sh
       - ./build/upscale-server
-

@@ -90,11 +90,14 @@ cp "$BUILD_DIR/ncnn_extracted/models/"*.param "$MACOS_DIR/models/" 2>/dev/null |
 # GO BUILD
 # ---------------------------------------------------------
 
-# Build Go binary (assumes Go is installed)
-echo "[4/6] Compiling Go Server..."
+# Build Go binaries (assumes Go is installed)
+echo "[4/6] Compiling Go Server, Client and Tray..."
 cd "$SCRIPT_DIR/../.."
-# We build as 'mlcupscale-bin' and use a wrapper script as the main executable
+# We build as 'mlcupscale-bin' and use the tray app as the main entry point
 CGO_ENABLED=0 go build -ldflags="-s -w -X upscale-service/internal/version.Version=$VERSION" -o "$MACOS_DIR/mlcupscale-bin" ./cmd/server/main.go
+CGO_ENABLED=0 go build -ldflags="-s -w -X upscale-service/internal/version.Version=$VERSION" -o "$MACOS_DIR/upscale-client" ./cmd/client/main.go
+# Tray app needs CGO for macOS Cocoa
+CGO_ENABLED=1 go build -ldflags="-s -w" -o "$MACOS_DIR/mlcupscale-tray" ./cmd/tray/main.go
 
 # ---------------------------------------------------------
 # CONFIGURATION
@@ -103,6 +106,8 @@ CGO_ENABLED=0 go build -ldflags="-s -w -X upscale-service/internal/version.Versi
 # Copy Config and modify it for the App Bundle paths
 echo "[5/6] Configuration & Finalizing Bundle..."
 cp config/config.yaml "$MACOS_DIR/config.yaml"
+# Ensure we have the icon for the tray app in the same dir or resources
+cp cmd/tray/icon.ico "$MACOS_DIR/icon.ico"
 
 # Update binary_path to point to our new compiled binary
 # Note: PyInstaller with --onedir creates the binary at ./bin/upscale-onnx/upscale-onnx
@@ -132,11 +137,11 @@ mkdir -p "\$UPSCALE_STORAGE_OUTPUT_DIR"
 
 # Log file
 LOG_FILE="\$HOME/Library/Logs/MLCupscale.log"
-echo "Starting MLCupscale at \$(date)" >> "\$LOG_FILE"
+echo "Starting MLCupscale Tray at \$(date)" >> "\$LOG_FILE"
 
-# --- 2. Run Server ---
-# The server will call ./bin/upscale-onnx which is now a self-contained binary
-./mlcupscale-bin -config config.yaml >> "\$LOG_FILE" 2>&1
+# --- 2. Run Tray App ---
+# The Tray App will then manage starting/stopping the server
+./mlcupscale-tray >> "\$LOG_FILE" 2>&1
 EOF
 chmod +x "$MACOS_DIR/mlcupscale"
 
