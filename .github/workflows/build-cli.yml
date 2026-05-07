@@ -46,11 +46,12 @@ jobs:
           submodules: recursive
 
       - name: Install Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.2.1
-        with:
-          vulkan-query-version: 1.3.204.1
-          vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: false
+        run: |
+          # Use a direct download/install method to avoid deprecated cache actions
+          curl -L -o vulkan-sdk.exe https://sdk.lunarg.com/sdk/download/1.3.204.1/windows/VulkanSDK-1.3.204.1-Installer.exe
+          ./vulkan-sdk.exe --root C:\VulkanSDK\1.3.204.1 --accept-licenses --default-answer --confirm-command install
+          echo "VULKAN_SDK=C:\VulkanSDK\1.3.204.1" >> $GITHUB_ENV
+          echo "C:\VulkanSDK\1.3.204.1\Bin" >> $GITHUB_PATH
 
       - name: Install Task
         uses: arduino/setup-task@v2
@@ -78,7 +79,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache: true
+          cache: false # Disable Go cache temporarily to avoid any toolkit issues
 
       - name: Install Task
         uses: arduino/setup-task@v2
@@ -93,7 +94,6 @@ jobs:
 
       - name: Download macOS Engine & Models
         run: |
-          # We still download the macOS binary for now
           task binaries
           task models
 
