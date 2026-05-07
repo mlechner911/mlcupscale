@@ -20,6 +20,11 @@ jobs:
         with:
           submodules: false # Do not clone private submodules
 
+      - name: Configure Git for Submodules
+        run: |
+          # Force HTTPS for submodules that use SSH URLs
+          git config --global url."https://github.com/".insteadOf git@github.com:
+
       - name: Initialize Engine Submodule
         run: |
           git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
@@ -51,6 +56,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false
+
+      - name: Configure Git for Submodules
+        run: |
+          git config --global url."https://github.com/".insteadOf git@github.com:
 
       - name: Initialize Engine Submodule
         run: |
