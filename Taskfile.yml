@@ -126,7 +126,7 @@ tasks:
     desc: Build the C++ upscaler engine from source (Linux)
     dir: third_party/realesrgan-ncnn-vulkan
     cmds:
-      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF .
+      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF src
       - cmake --build build -j 4
       - mkdir -p ../../bin
       - cp build/realesrgan-ncnn-vulkan ../../bin/realesrgan-ncnn-vulkan
@@ -137,7 +137,7 @@ tasks:
     desc: Build the C++ upscaler engine from source (Windows)
     dir: third_party/realesrgan-ncnn-vulkan
     cmds:
-      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF .
+      - cmake -B build -D ncnn_RUNTIME_CPU=ON -D ncnn_VULKAN=ON -D ncnn_BUILD_EXAMPLES=OFF src
       - cmake --build build --config Release -j 4
       - mkdir -p ../../bin
       - copy build\Release\realesrgan-ncnn-vulkan.exe ..\..\bin\realesrgan-ncnn-vulkan.exe
