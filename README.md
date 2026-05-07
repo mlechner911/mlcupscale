@@ -1,6 +1,6 @@
 # Image Upscale Service
 
-A high-performance, containerized REST API for AI-based image upscaling using Real-ESRGAN (ncnn-vulkan).
+A high-performance, containerized REST API and standalone CLI for AI-based image upscaling using Real-ESRGAN (ncnn-vulkan).
 
 ![Go Version](https://img.shields.io/badge/Go-1.24-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -10,215 +10,83 @@ A high-performance, containerized REST API for AI-based image upscaling using Re
 
 I wrote this "upscale service" to handle **huge images** (e.g., 10,000x10,000 pixels) that require significant compute power to upscale even further.
 
-This server is **not** primarily meant for small images; there are plenty of existing tools for that. The goal is to utilize a high-powered server (GPU) to process massive files asynchronously without blocking the client.
-
-**The Workflow:**
-1.  **Upload** a massive file to the server.
-2.  **Poll** the status endpoint while the server processes the job.
-3.  **Retrieve** the final image once processing is complete.
+While this project is based on the excellent [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) by xinntao, it modernizes the integration by:
+1.  **Building from Source**: The core engine is compiled from the latest C++ source in our CI to ensure security, stability, and compatibility with modern hardware.
+2.  **Go Wrapper/API**: Providing a robust, asynchronous Go-based REST API for server-side processing.
+3.  **Standalone CLI**: A single-executable tool that bundles the engine and models for easy use on Windows, macOS, and Linux.
 
 ## Features
 
 *   **AI Upscaling**: High-quality 2x, 3x, and 4x image upscaling.
 *   **Models**: Includes `realesrgan-x4plus`, `realesrgan-x4plus-anime`, and `realesr-animevideov3`.
 *   **Performance**: Optimized for GPU (Vulkan) with CPU fallback.
-*   **API**: Modern, asynchronous REST API with job tracking and swagger documentation.
+*   **Standalone CLI**: Use `./mlcupscale-cli` directly without a server.
+*   **Asynchronous API**: Modern REST API with job tracking and swagger documentation.
 *   **Production Ready**: Docker support, health checks, metrics, and rate limiting.
 
 ## Prerequisites
 
-*   **Linux/macOS** (Windows requires WSL2)
+*   **Linux/macOS** (Windows requires WSL2 for server, or native for CLI)
 *   **Go 1.24+** (for building locally)
 *   **Task** (recommended) or **Make**
-*   **Docker & Docker Compose** (optional, for containerized deployment)
-*   **Vulkan Driver** (optional, for GPU acceleration)
+*   **Docker & Docker Compose** (optional)
+*   **Vulkan Driver** (required for GPU acceleration)
 
 ## Getting Started
 
-### 1. Clone the Repository
+### 1. Standalone CLI (Quickest)
+
+You can download the standalone CLI from the [GitHub Releases](https://github.com/mlechner911/mlcupscale/releases) page. It contains everything needed in one file.
 
 ```bash
-git clone <repository-url>
-cd mlcupscale
+# Build it yourself
+task build-cli
+./build/mlcupscale-cli-linux -i photo.jpg -o result.png
 ```
 
-### 2. Download Models & Binaries
+### 2. Run the Service (Server)
 
-This step is required for both local and Docker usage. It downloads the Real-ESRGAN models and the `realesrgan-ncnn-vulkan` binary from the [upstream repository](https://github.com/xinntao/Real-ESRGAN/releases).
+Build and start the REST API server:
 
-**Note on the Binary:**
-The default setup uses pre-compiled binaries for convenience. If you need to build `realesrgan-ncnn-vulkan` from source (e.g., for optimized Vulkan shaders, specific hardware support, or non-standard architectures), please follow the [Real-ESRGAN Build Instructions](https://github.com/xinntao/Real-ESRGAN#dependencies). After building, place your custom executable in the `bin/` directory (or `bin/` inside the app bundle for macOS).
-
-Using Task:
 ```bash
-task download-models
-```
+# Setup: Download/Build engines and models
+task binaries
+task models
 
-Using Make:
-```bash
-make models
-```
-
-### 3. Run Locally
-
-Build and start the server:
-
-Using Task:
-```bash
+# Run
 task run
 ```
 
-Using Make:
-```bash
-make run
-```
+The server will start at `http://localhost:8089`. Visit `http://localhost:8089/api/v1/docs` for the Swagger UI.
 
-The server will start at `http://localhost:8089`.
-
-### 4. Run with Docker
-
-The included `deployments/docker/Dockerfile` builds a production-ready container image.
-
-Build and run using Docker Compose:
+### 3. Run with Docker
 
 ```bash
 make docker-run
 ```
 
-To stop the service:
-```bash
-make docker-stop
-```
-
-**Note on GPU Support in Docker:**
-Running this application in Docker with GPU acceleration requires the specific GPU runtime drivers for your hardware (e.g., NVIDIA Container Toolkit). Without mounting the GPU and proper drivers, the application will fall back to CPU processing, which is significantly slower.
-The default Dockerfile does not include proprietary driver layers.
-
-### 5. Build for macOS (Remote)
-
-If you have SSH access to a macOS machine (e.g., Apple Silicon), you can build a native `.app` and `.dmg` remotely.
-
-Prerequisites on the Mac:
-- Go 1.24+ installed
-- `real-esrgan-ncnn-vulkan` binary available (downloaded by the build script)
-
-Command:
-```bash
-# Deploys code to Mac, builds App/DMG, and downloads artifacts back to ./build/macos
-task macos:build
-```
-
-You can also run the service remotely on the Mac:
-```bash
-# Sync and run
-task macos:start
-# View logs
-task macos:logs
-# Stop service
-task macos:stop
-```
-
 ## Performance & Testing
 
-The service has been tested on **macOS (Apple Silicon)** upscaling massive images which typically fail on consumer hardware due to memory constraints.
+The service uses a specialized tiling strategy (default 512px) to handle massive images that typically fail on consumer hardware due to memory constraints (OOM).
 
-### Benchmarks (Mac Studio M2 Ultra)
-
-| Test Case | Method | Upscale Factor | Input Resolution | Output Resolution | Time |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Normal** | CoreML/ONNX | 4x | 1920x1080 (2K) | 7680x4320 (8K) | ~14s |
-| **Extreme** | CoreML/ONNX | 4x | 3840x2160 (4K) | 15360x8640 (16K) | ~58s |
-
-*Note: The "Extreme" test uses a specialized tiling strategy (512px tiles) to bypass CoreML graph size limits and avoid OOM crashes.*
-
-### Alternative: ONNX Runtime (Experimental)
-
-The project includes an **experimental** Python-based ONNX Runtime upscaler for better performance on NVIDIA GPUs (via CUDA/TensorRT) and broader compatibility.
-
-To use it:
-1.  Install dependencies: `pip install onnxruntime-gpu opencv-python numpy basicsr`
-2.  **Generate ONNX Models**: The official models are distributed as PyTorch (`.pth`) files. Run the provided helper to download and convert them:
-    ```bash
-    python cmd/python-onnx/convert.py models/
-    ```
-3.  Update `config/config.yaml`:
-    ```yaml
-    upscaler:
-      binary_path: "./bin/upscale-onnx"
-    ```
-4.  Restart the server.
-
-The wrapper script `bin/upscale-onnx` calls `cmd/python-onnx/main.py`, which supports tiling (for large images) and GPU acceleration automatically.
-It mimics the progress reporting of the original binary, so the API progress endpoints work transparently.
+| Test Case | Upscale Factor | Input Resolution | Output Resolution |
+| :--- | :--- | :--- | :--- |
+| **Normal** | 4x | 1920x1080 (2K) | 7680x4320 (8K) |
+| **Extreme** | 4x | 3840x2160 (4K) | 15360x8640 (16K) |
 
 ## API Usage
 
-The API is fully documented with OpenAPI/Swagger.
-Once the server is running, visit **http://localhost:8089/api/v1/docs** for the interactive UI.
-
-Documentation resources:
-*   **[API User Guide](docs/API_GUIDE.md)**: Detailed endpoint documentation and examples.
-*   **[OpenAPI Specification](docs/openapi.yaml)**: Raw Swagger/OpenAPI definition.
-*   **[Swagger UI HTML](docs/swagger.html)**: Standalone Swagger UI viewer.
-
-### Quick Examples
-
-#### Upscale an Image (Async)
+### Submission (Async)
 
 ```bash
-# 1. Submit Job
 curl -X POST http://localhost:8089/api/v1/upscale \
   -F "image=@photo.jpg" \
-  -F "scale=4" \
-  -F "model_name=realesrgan-x4plus"
-
-# Response: {"success": true, "job_id": "123...", ...}
-
-# 2. Check Status
-curl http://localhost:8089/api/v1/status/123...
-
-# 3. Download (when status is "completed")
-curl -O http://localhost:8089/api/v1/download/123...
+  -F "scale=4"
 ```
 
-#### List Available Models
-
-```bash
-curl http://localhost:8089/api/v1/models
-```
-
-## Client CLI
-
-The project includes a CLI client for easy interaction with the API.
-
-```bash
-make build-client
-./build/upscale-client -input image.jpg -output upscaled.png -scale 4
-```
-
-## Configuration
-
-Configuration is managed via `config/config.yaml`. Key settings include:
-
-*   **Server**: Port, timeouts.
-*   **Security (Production)**:
-    *   `auth_token`: Set a strong string here to enable Bearer Token authentication.
-    *   `api_prefix`: Adjust the global API prefix (default: `/api/v1`). Useful when running behind reverse proxies like Traefik (e.g., set to `/upscaler/v1`).
-*   **Upscaler**: GPU enable/disable, thread count, model path.
-*   **Storage**: Upload/output directories, cleanup policies.
-*   **Limits**: Concurrency, queue size.
-
-For Docker, see `config/config.docker.yaml`.
-
-## Directory Structure
-
-*   `cmd/`: Entry points for server and client.
-*   `internal/`: Core logic (API handlers, upscaler, storage).
-*   `deployments/`: Docker configurations.
-*   `models/`: AI models (downloaded via `make models`).
-*   `bin/`: External binaries (ncnn-vulkan).
-*   `data/`: Storage for uploads and output images.
+Refer to **[API User Guide](docs/API_GUIDE.md)** for more details.
 
 ## License
 
 MIT License - Copyright (c) 2026 Michael Lechner
+Real-ESRGAN core by xinntao.
