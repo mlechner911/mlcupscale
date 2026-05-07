@@ -19,17 +19,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false
+          fetch-depth: 1
 
       - name: Configure Git for Submodules
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
-          # Remove private submodules from config so update --init doesn't fail
-          git config -f .gitmodules --remove-section submodule..mlcai || true
-          git config -f .gitmodules --remove-section submodule.mlcprodweb || true
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
+          # Explicitly initialize only the engine submodule to avoid NAS-based ones
+          git submodule update --init third_party/realesrgan-ncnn-vulkan
+          cd third_party/realesrgan-ncnn-vulkan
+          git submodule update --init --recursive
+
+      - name: Debug - List Engine Files
+        run: ls -la third_party/realesrgan-ncnn-vulkan
 
       - name: Install Dependencies
         run: |
@@ -58,24 +62,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: false
+          fetch-depth: 1
 
       - name: Configure Git for Submodules
-        shell: bash
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config -f .gitmodules --remove-section submodule..mlcai || true
-          git config -f .gitmodules --remove-section submodule.mlcprodweb || true
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
+          git submodule update --init third_party/realesrgan-ncnn-vulkan
+          cd third_party/realesrgan-ncnn-vulkan
+          git submodule update --init --recursive
 
       - name: Install Vulkan SDK
         run: |
           choco install vulkan-sdk
-          # Refresh environment to get VULKAN_SDK
-          echo "VULKAN_SDK=C:\VulkanSDK" >> $env:GITHUB_ENV
-          echo "C:\VulkanSDK\Bin" >> $env:GITHUB_PATH
+          # Refresh environment
+          echo "VULKAN_SDK=C:\VulkanSDK" >> $GITHUB_ENV
+          echo "C:\VulkanSDK\Bin" >> $GITHUB_PATH
 
       - name: Install Task
         uses: arduino/setup-task@v2
