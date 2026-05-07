@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-engine-linux:
     name: Build Engine (Linux)
@@ -15,7 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false # Do not clone private submodules
+
+      - name: Initialize Engine Submodule
+        run: |
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Install Dependencies
         run: |
@@ -43,15 +50,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
+
+      - name: Initialize Engine Submodule
+        run: |
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Install Vulkan SDK
         run: |
           # Use a direct download/install method to avoid deprecated cache actions
           curl -L -o vulkan-sdk.exe https://sdk.lunarg.com/sdk/download/1.3.204.1/windows/VulkanSDK-1.3.204.1-Installer.exe
           ./vulkan-sdk.exe --root C:\VulkanSDK\1.3.204.1 --accept-licenses --default-answer --confirm-command install
-          echo "VULKAN_SDK=C:\VulkanSDK\1.3.204.1" >> $GITHUB_ENV
-          echo "C:\VulkanSDK\1.3.204.1\Bin" >> $GITHUB_PATH
+          echo "VULKAN_SDK=C:\VulkanSDK\1.3.204.1" >> $env:GITHUB_ENV
+          echo "C:\VulkanSDK\1.3.204.1\Bin" >> $env:GITHUB_PATH
 
       - name: Install Task
         uses: arduino/setup-task@v2
@@ -74,12 +85,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          cache: false # Disable Go cache temporarily to avoid any toolkit issues
+          cache: false
 
       - name: Install Task
         uses: arduino/setup-task@v2
