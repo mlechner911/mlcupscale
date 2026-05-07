@@ -23,12 +23,13 @@ jobs:
       - name: Configure Git for Submodules
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
+          # Remove private submodules from config so update --init doesn't fail
+          git config -f .gitmodules --remove-section submodule..mlcai || true
+          git config -f .gitmodules --remove-section submodule.mlcprodweb || true
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init third_party/realesrgan-ncnn-vulkan
-          cd third_party/realesrgan-ncnn-vulkan
-          git submodule update --init --recursive
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Install Dependencies
         run: |
@@ -59,19 +60,20 @@ jobs:
           submodules: false
 
       - name: Configure Git for Submodules
+        shell: bash
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config -f .gitmodules --remove-section submodule..mlcai || true
+          git config -f .gitmodules --remove-section submodule.mlcprodweb || true
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init third_party/realesrgan-ncnn-vulkan
-          cd third_party/realesrgan-ncnn-vulkan
-          git submodule update --init --recursive
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Install Vulkan SDK
         run: |
           choco install vulkan-sdk
-          # The path is usually set by the installer, but we might need to refresh env
+          # Refresh environment to get VULKAN_SDK
           echo "VULKAN_SDK=C:\VulkanSDK" >> $env:GITHUB_ENV
           echo "C:\VulkanSDK\Bin" >> $env:GITHUB_PATH
 
