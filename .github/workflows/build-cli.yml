@@ -27,13 +27,11 @@ jobs:
 
       - name: Initialize Engine Submodule
         run: |
-          # Explicitly initialize only the engine submodule to avoid NAS-based ones
-          git submodule update --init third_party/realesrgan-ncnn-vulkan
-          cd third_party/realesrgan-ncnn-vulkan
-          git submodule update --init --recursive
+          # Recursively initialize only the engine submodule
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Debug - List Engine Files
-        run: ls -la third_party/realesrgan-ncnn-vulkan
+        run: ls -la third_party/realesrgan-ncnn-vulkan/src
 
       - name: Install Dependencies
         run: |
@@ -70,9 +68,7 @@ jobs:
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init third_party/realesrgan-ncnn-vulkan
-          cd third_party/realesrgan-ncnn-vulkan
-          git submodule update --init --recursive
+          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
 
       - name: Install Vulkan SDK
         run: |
