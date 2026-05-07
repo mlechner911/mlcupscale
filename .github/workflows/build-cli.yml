@@ -18,16 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: false # Do not clone private submodules
+          submodules: false
 
       - name: Configure Git for Submodules
         run: |
-          # Force HTTPS for submodules that use SSH URLs
-          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
+          git submodule update --init third_party/realesrgan-ncnn-vulkan
+          cd third_party/realesrgan-ncnn-vulkan
+          git submodule update --init --recursive
 
       - name: Install Dependencies
         run: |
@@ -59,19 +60,20 @@ jobs:
 
       - name: Configure Git for Submodules
         run: |
-          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
 
       - name: Initialize Engine Submodule
         run: |
-          git submodule update --init --recursive third_party/realesrgan-ncnn-vulkan
+          git submodule update --init third_party/realesrgan-ncnn-vulkan
+          cd third_party/realesrgan-ncnn-vulkan
+          git submodule update --init --recursive
 
       - name: Install Vulkan SDK
         run: |
-          # Use a direct download/install method to avoid deprecated cache actions
-          curl -L -o vulkan-sdk.exe https://sdk.lunarg.com/sdk/download/1.3.204.1/windows/VulkanSDK-1.3.204.1-Installer.exe
-          ./vulkan-sdk.exe --root C:\VulkanSDK\1.3.204.1 --accept-licenses --default-answer --confirm-command install
-          echo "VULKAN_SDK=C:\VulkanSDK\1.3.204.1" >> $env:GITHUB_ENV
-          echo "C:\VulkanSDK\1.3.204.1\Bin" >> $env:GITHUB_PATH
+          choco install vulkan-sdk
+          # The path is usually set by the installer, but we might need to refresh env
+          echo "VULKAN_SDK=C:\VulkanSDK" >> $env:GITHUB_ENV
+          echo "C:\VulkanSDK\Bin" >> $env:GITHUB_PATH
 
       - name: Install Task
         uses: arduino/setup-task@v2
