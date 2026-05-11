@@ -76,3 +76,5 @@ test_upscaled.png
 /*.json
 /*.jpeg
 /*.onnx
+/client
+/server
