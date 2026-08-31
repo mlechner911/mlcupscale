@@ -1,5 +1,8 @@
 # Image Upscale Service
 
+> **[mlcgo.eu](https://mlcgo.eu)** — tools, libraries and manuals · [Product page](https://mlcgo.eu/products/mlcupscale/)
+
+
 A high-performance, containerized REST API and standalone CLI for AI-based image upscaling using Real-ESRGAN (ncnn-vulkan).
 
 ![Go Version](https://img.shields.io/badge/Go-1.24-blue)
