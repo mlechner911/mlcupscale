@@ -46,7 +46,12 @@ tasks:
 
   build-cli:
     desc: Build the standalone single-executable CLI for all platforms
-    deps: [binaries, models, prepare-cli-assets]
+    # Nur prepare-cli-assets. binaries und models haengen jetzt dort und
+    # waeren hier doppelt: Task startet Deps parallel und fasst zwei
+    # Aufrufe desselben Tasks aus verschiedenen Zweigen nicht zusammen —
+    # beide Downloads liefen gleichzeitig in dasselbe Verzeichnis und
+    # rissen sich die Dateien weg.
+    deps: [prepare-cli-assets]
     cmds:
       - mkdir -p {{.BUILD_DIR}}
       - echo "Building Linux CLI..."
