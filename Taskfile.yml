@@ -67,6 +67,15 @@ tasks:
 
   prepare-cli-assets:
     desc: Copy required binaries and models to the CLI assets directory for embedding
+    # deps, nicht Geschwister: `build-cli` fuehrte binaries, models und
+    # prepare-cli-assets nebeneinander auf, und Task startet Deps
+    # parallel. Auf einem Rechner, auf dem bin/ und models/ schon
+    # gefuellt sind, greift der status:-Block unten und der Task tut
+    # nichts — deshalb ist es nie aufgefallen. Auf einem frischen Clone
+    # kopiert er Dateien, die noch heruntergeladen werden, und bricht mit
+    # "cp: cannot stat" ab. Gefunden beim Einhaengen dieses Repos als
+    # Submodul in mlc_opticscript.
+    deps: [binaries, models]
     cmds:
       - mkdir -p cmd/upscale-cli/assets/bin
       - mkdir -p cmd/upscale-cli/assets/models
